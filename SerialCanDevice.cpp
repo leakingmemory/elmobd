@@ -23,6 +23,43 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
     EchoOff();
     HeadersOn();
     LinefeedsOff();
+    if (AutoProtocol()) {
+        return;
+    }
+    if (TrySetProtocol("6")) {
+        return;
+    }
+    if (TrySetProtocol("8")) {
+        return;
+    }
+    if (TrySetProtocol("1")) {
+        return;
+    }
+    if (TrySetProtocol("7")) {
+        return;
+    }
+    if (TrySetProtocol("9")) {
+        return;
+    }
+    if (TrySetProtocol("2")) {
+        return;
+    }
+    if (TrySetProtocol("3")) {
+        return;
+    }
+    if (TrySetProtocol("4")) {
+        return;
+    }
+    if (TrySetProtocol("5")) {
+        return;
+    }
+    if (TrySetProtocol("A")) {
+        return;
+    }
+    throw SerialCanException("None of the protocols");
+}
+
+SerialCanDevice::~SerialCanDevice() {
 }
 
 void SerialCanDevice::Drain() {
@@ -154,4 +191,52 @@ float SerialCanDevice::GetVoltage() {
     }
     WaitForPrompt(buf);
     return volt;
+}
+
+bool SerialCanDevice::AutoProtocol() {
+    if (GetVoltage() < 6) {
+        throw SerialCanException("Not connected to OBD socket");
+    }
+    SimpleCommand("ATSP0");
+    serialInterface->Write("0100\r");
+    {
+        std::string buf{};
+        std::string chatter = WaitForPrompt(buf);
+        if (chatter.find("UNABLE TO CONNECT") != std::string::npos) {
+            std::cerr << "Unable to connect with auto protocol\n";
+            return false;
+        }
+    }
+    serialInterface->Write("ATDPN");
+    {
+        std::string buf{};
+        std::string ln{};
+        if (!WaitForLine(buf, ln)) {
+            throw SerialCanException("ATDPN no resp");
+        }
+        std::cout << "Auto protocol selected: " << ln << "\n";
+        return true;
+    }
+}
+
+bool SerialCanDevice::TrySetProtocol(const std::string &proto) {
+    if (GetVoltage() < 6) {
+        throw SerialCanException("Not connected to OBD socket");
+    }
+    {
+        std::string cmd{"ATTP"};
+        cmd.append(proto);
+        SimpleCommand(cmd);
+    }
+    serialInterface->Write("0100\r");
+    {
+        std::string buf{};
+        std::string chatter = WaitForPrompt(buf);
+        if (chatter.find("UNABLE TO CONNECT") != std::string::npos) {
+            std::cerr << "Unable to connect using proto " << proto << "\n";
+            return false;
+        }
+    }
+    std::cout << "Connected using proto " << proto << "\n";
+    return true;
 }

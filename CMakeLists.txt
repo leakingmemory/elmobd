@@ -3,4 +3,5 @@ project(elmobd)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(elmobd main.cpp SerialInterface.cpp SerialInterface.h SerialCanDevice.cpp SerialCanDevice.h)
+add_executable(elmobd main.cpp SerialInterface.cpp SerialInterface.h SerialCanDevice.cpp SerialCanDevice.h
+        SerialCarDevice.cpp SerialCarDevice.h SerialCarDevice.cpp SerialCarDevice.h)

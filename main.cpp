@@ -1,13 +1,13 @@
 #include <iostream>
 #include "SerialInterface.h"
-#include "SerialCanDevice.h"
+#include "SerialCarDevice.h"
 
 int main() {
     SerialInterface serialInterface{"/dev/ttyUSB0"};
     serialInterface.SetSpeed(SerialSpeed::S38400);
     serialInterface.CommitAttributes();
-    SerialCanDevice serialCanDevice{std::move(serialInterface)};
-    std::cout << serialCanDevice.GetDeviceId() << "\n";
-    std::cout << "Car voltage: " << serialCanDevice.GetVoltage() << "V\n";
+    SerialCarDevice serialCarDevice{std::move(serialInterface)};
+    std::cout << serialCarDevice.GetDeviceId() << "\n";
+    std::cout << "Car voltage: " << serialCarDevice.GetVoltage() << "V\n";
     return 0;
 }

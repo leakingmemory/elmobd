@@ -15,6 +15,7 @@ private:
     std::string deviceId{};
 public:
     SerialCanDevice(SerialInterface &&mv);
+    ~SerialCanDevice();
 private:
     void Drain();
     bool WaitForLine(std::string &buf, std::string &ln);
@@ -32,6 +33,8 @@ private:
     }
 public:
     float GetVoltage();
+    bool AutoProtocol();
+    bool TrySetProtocol(const std::string &proto);
     std::string GetDeviceId() {
         return deviceId;
     }
