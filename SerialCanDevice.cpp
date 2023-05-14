@@ -26,34 +26,54 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
     if (AutoProtocol()) {
         return;
     }
+    protocols.insert_or_assign("1", "SAE_J1850_PWM");
+    protocols.insert_or_assign("2", "SAE_J1850_VPW");
+    protocols.insert_or_assign("3", "ISO_9141_2");
+    protocols.insert_or_assign("4", "ISO_14230_4_5baud");
+    protocols.insert_or_assign("5", "ISO_14320_4_fast");
+    protocols.insert_or_assign("6", "ISO_14320_4_11bit_500k");
+    protocols.insert_or_assign("7", "ISO_14230_4_29bit_500k");
+    protocols.insert_or_assign("8", "ISO_14230_4_11bit_250k");
+    protocols.insert_or_assign("9", "ISO_14230_4_29bit_250k");
+    protocols.insert_or_assign("A", "SAE_J1939");
     if (TrySetProtocol("6")) {
+        protocol = "6";
         return;
     }
     if (TrySetProtocol("8")) {
+        protocol = "8";
         return;
     }
     if (TrySetProtocol("1")) {
+        protocol = "1";
         return;
     }
     if (TrySetProtocol("7")) {
+        protocol = "7";
         return;
     }
     if (TrySetProtocol("9")) {
+        protocol = "9";
         return;
     }
     if (TrySetProtocol("2")) {
+        protocol = "2";
         return;
     }
     if (TrySetProtocol("3")) {
+        protocol = "3";
         return;
     }
     if (TrySetProtocol("4")) {
+        protocol = "4";
         return;
     }
     if (TrySetProtocol("5")) {
+        protocol = "5";
         return;
     }
     if (TrySetProtocol("A")) {
+        protocol = "A";
         return;
     }
     throw SerialCanException("None of the protocols");
@@ -215,6 +235,7 @@ bool SerialCanDevice::AutoProtocol() {
             throw SerialCanException("ATDPN no resp");
         }
         std::cout << "Auto protocol selected: " << ln << "\n";
+        protocol = ln;
         return true;
     }
 }

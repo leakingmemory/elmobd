@@ -6,20 +6,26 @@
 #define ELMOBD_SERIALCANDEVICE_H
 
 #include <memory>
+#include <map>
+#include <string>
 
 class SerialInterface;
 
 class SerialCanDevice {
-private:
+protected:
     std::unique_ptr<SerialInterface> serialInterface;
     std::string deviceId{};
+    std::map<std::string,std::string> protocols{};
+    std::string protocol{};
 public:
     SerialCanDevice(SerialInterface &&mv);
     ~SerialCanDevice();
 private:
     void Drain();
+protected:
     bool WaitForLine(std::string &buf, std::string &ln);
     std::string WaitForPrompt(std::string &buf);
+private:
     void Reset();
     void EchoOff();
 public:
