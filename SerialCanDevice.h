@@ -17,14 +17,19 @@ protected:
     std::string deviceId{};
     std::map<std::string,std::string> protocols{};
     std::string protocol{};
+    uint32_t pidsA;
 public:
     SerialCanDevice(SerialInterface &&mv);
     ~SerialCanDevice();
+    static std::string DecodeHex(const std::string &);
+    static uint32_t ElmHeader(const std::string &msg);
+    static uint16_t ReplyCmd(const std::string &msg);
+    static uint64_t PayloadInt(const std::string &msg);
 private:
     void Drain();
 protected:
-    bool WaitForLine(std::string &buf, std::string &ln);
-    std::string WaitForPrompt(std::string &buf);
+    bool WaitForLine(std::string &buf, std::string &ln, int timeout_ms);
+    std::string WaitForPrompt(std::string &buf, int timeout_ms);
 private:
     void Reset();
     void EchoOff();
@@ -39,6 +44,7 @@ private:
     }
 public:
     float GetVoltage();
+    bool PIDS_A();
     bool AutoProtocol();
     bool TrySetProtocol(const std::string &proto);
     std::string GetDeviceId() {

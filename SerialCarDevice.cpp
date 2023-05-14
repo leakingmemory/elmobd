@@ -17,28 +17,28 @@ public:
 };
 
 SerialCarDevice::SerialCarDevice(SerialInterface &&mv) : SerialCanDevice(std::move(mv)) {
-    PIDS_A();
-    RPM();
 }
 
-void SerialCarDevice::PIDS_A() {
-    serialInterface->Write("0100\r");
-    std::string buf{};
-    std::string ln{};
-    if (!WaitForLine(buf, ln)) {
-        throw SerialCarException("PIDS_A no resp");
+bool SerialCarDevice::HasRPM() const {
+    if ((pidsA & 0x100000) != 0) {
+        return true;
+    } else {
+        return false;
     }
-    std::cout << "PIDS_A: " << ln << "\n";
-    WaitForPrompt(buf);
 }
 
-void SerialCarDevice::RPM() {
+int SerialCarDevice::RPM() {
     serialInterface->Write("010C\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln)) {
+    if (!WaitForLine(buf, ln, 200)) {
         throw SerialCarException("RPM no resp");
     }
-    std::cout << "RPM: " << ln << "\n";
-    WaitForPrompt(buf);
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != 0x10C) {
+        throw SerialCarException("RPM wrong resp");
+    }
+    auto rawRpm = PayloadInt(msg);
+    WaitForPrompt(buf, 1000);
+    return (int) (rawRpm / 4);
 }

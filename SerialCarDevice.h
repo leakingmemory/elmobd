@@ -11,9 +11,9 @@ class SerialCarDevice : public SerialCanDevice {
 public:
     SerialCarDevice(SerialInterface &&mv);
 private:
-    void PIDS_A();
 public:
-    void RPM();
+    bool HasRPM() const;
+    int RPM();
 };
 
 
