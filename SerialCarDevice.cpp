@@ -27,6 +27,14 @@ bool SerialCarDevice::HasRPM() const {
     }
 }
 
+bool SerialCarDevice::HasVIN() const {
+    if ((pid9s & 0x40000000) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 int SerialCarDevice::RPM() {
     serialInterface->Write("010C\r");
     std::string buf{};
@@ -41,4 +49,32 @@ int SerialCarDevice::RPM() {
     auto rawRpm = PayloadInt(msg);
     WaitForPrompt(buf, 1000);
     return (int) (rawRpm / 4);
+}
+
+std::string SerialCarDevice::VIN() {
+    serialInterface->Write("0902\r");
+    std::vector<std::string> lns{};
+    {
+        std::string buf{};
+        auto data = WaitForPrompt(buf, 7000);
+        {
+            auto iterator = data.begin();
+            while (iterator != data.end()) {
+                if (*iterator == ' ') {
+                    data.erase(iterator);
+                } else {
+                    ++iterator;
+                }
+            }
+        }
+        lns = SplitLines(data);
+    }
+    std::string vin{};
+    for (const auto ln : lns) {
+        auto msg = DecodeHex(ln);
+        if (ReplyCmd(msg) == 0x902) {
+            vin.append(Payload(msg));
+        }
+    }
+    return vin;
 }

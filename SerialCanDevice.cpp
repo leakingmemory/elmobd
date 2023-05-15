@@ -20,14 +20,25 @@ public:
 
 SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
     serialInterface = std::make_unique<SerialInterface>(std::move(mv));
-    Drain();
-    Reset();
-    EchoOff();
-    HeadersOn();
-    LinefeedsOff();
-    if (AutoProtocol()) {
-        return;
+    {
+        auto retry = 10;
+        while (true) {
+            try {
+                Drain();
+                Reset();
+                break;
+            } catch (...) {
+                if (--retry == 0) {
+                    throw;
+                }
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(2s);
+                serialInterface->CommitAttributes();
+                std::this_thread::sleep_for(1s);
+            }
+        }
     }
+    HeadersOn();
     protocols.insert_or_assign("1", "SAE_J1850_PWM");
     protocols.insert_or_assign("2", "SAE_J1850_VPW");
     protocols.insert_or_assign("3", "ISO_9141_2");
@@ -38,8 +49,34 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
     protocols.insert_or_assign("8", "ISO_14230_4_11bit_250k");
     protocols.insert_or_assign("9", "ISO_14230_4_29bit_250k");
     protocols.insert_or_assign("A", "SAE_J1939");
-    if (TrySetProtocol("2")) {
-        protocol = "6";
+    DetectProtocol();
+    std::cout << "Found PIDS_A " << std::hex << pidsA << std::dec << "\n";
+    if (HasPIDS_B()) {
+        PIDS_B();
+        std::cout << "Found PIDS_B " << std::hex << pidsB << std::dec << "\n";
+    }
+    if (HasPIDS_C()) {
+        PIDS_C();
+        std::cout << "Found PIDS_C " << std::hex << pidsC << std::dec << "\n";
+    }
+    if (HasPIDS_D()) {
+        PIDS_D();
+        std::cout << "Found PIDS_D " << std::hex << pidsD << std::dec << "\n";
+    }
+    if (HasPIDS_E()) {
+        PIDS_E();
+        std::cout << "Found PIDS_E " << std::hex << pidsE << std::dec << "\n";
+    }
+    if (HasPIDS_F()) {
+        PIDS_F();
+        std::cout << "Found PIDS_F " << std::hex << pidsD << std::dec << "\n";
+    }
+    PID9s();
+    std::cout << "Found PID9s " << std::hex << pid9s << std::dec << "\n";
+}
+
+void SerialCanDevice::DetectProtocol() {
+    if (AutoProtocol()) {
         return;
     }
     if (TrySetProtocol("6")) {
@@ -194,6 +231,13 @@ uint64_t SerialCanDevice::PayloadInt(const std::string &msg) {
     return res;
 }
 
+std::string SerialCanDevice::Payload(const std::string &msg) {
+    if (msg.size() < 7) {
+        return "";
+    }
+    return msg.substr(5, msg.size() - 6);
+}
+
 void SerialCanDevice::Drain() {
     while (serialInterface->Read() != "") {
     }
@@ -265,29 +309,58 @@ std::string SerialCanDevice::WaitForPrompt(std::string &buf, int timeout_ms) {
     }
 }
 
+std::vector<std::string> SerialCanDevice::SplitLines(const std::string &str) {
+    std::vector<std::string> lns{};
+    std::remove_const<typeof(std::string::npos)>::type base = 0;
+    while (true) {
+        typeof(base) split = str.find('\r', base);
+        if (split == std::string::npos) {
+            break;
+        }
+        {
+            auto token = str.substr(base, split - base);
+            base = split + 1;
+            lns.emplace_back(token);
+        }
+        if (base >= str.size()) {
+            return lns;
+        }
+    }
+    {
+        auto token = str.substr(base);
+        lns.emplace_back(token);
+    }
+    return lns;
+}
+
 void SerialCanDevice::Reset() {
     Drain();
     serialInterface->Write("ATZ\r");
     std::string buf{};
-    if (!WaitForLine(buf, deviceId, 5000)) {
-        throw SerialCanException("Reset dev id response missing");
-    }
-    while (!deviceId.starts_with("ELM")) {
-        if (!WaitForLine(buf, deviceId, 2000)) {
-            throw SerialCanException("Reset dev id response missing");
-        }
+    WaitForLine(buf, deviceId, 5000);
+    if (!deviceId.starts_with("ELM")) {
+        WaitForLine(buf, deviceId, 2000);
     }
     WaitForPrompt(buf, 2000);
-    if (!buf.empty()) {
-        throw SerialCanException("Reset dev babble");
-    }
+    Drain();
+    buf = "";
+    serialInterface->Write("ATE0\r");
+    WaitForPrompt(buf, 2000);
+    Drain();
+    buf = "";
+    serialInterface->Write("ATL0\r");
+    WaitForPrompt(buf, 2000);
+    Drain();
+    buf = "";
+    EchoOff();
+    LinefeedsOff();
 }
 
 void SerialCanDevice::EchoOff() {
     serialInterface->Write("ATE0\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 100)) {
+    if (!WaitForLine(buf, ln, 1000)) {
         throw SerialCanException("Echo off no resp");
     }
     if (ln == "OK") {
@@ -374,6 +447,152 @@ bool SerialCanDevice::PIDS_A() {
     } catch (...) {
         return false;
     }
+}
+
+void SerialCanDevice::PIDS_B() {
+    serialInterface->Write("0120\r");
+    std::string buf{};
+    std::string data = WaitForPrompt(buf, 2000);
+    while (data.ends_with("\r")) {
+        data = data.substr(0, data.size() - 1);
+    }
+    auto cutpos = data.find_last_of('\r');
+    if (cutpos != std::string::npos) {
+        data = data.substr(cutpos + 1);
+    }
+    if (data.empty()) {
+        throw SerialCanException("PIDS_B no resp");
+    }
+    auto bindata = DecodeHex(data);
+    if (ReplyCmd(bindata) != 0x120) {
+        throw SerialCanException("PIDS_B wrong resp");
+    }
+    pidsB = PayloadInt(bindata);
+}
+
+void SerialCanDevice::PIDS_C() {
+    serialInterface->Write("0140\r");
+    std::string buf{};
+    std::string data = WaitForPrompt(buf, 2000);
+    while (data.ends_with("\r")) {
+        data = data.substr(0, data.size() - 1);
+    }
+    auto cutpos = data.find_last_of('\r');
+    if (cutpos != std::string::npos) {
+        data = data.substr(cutpos + 1);
+    }
+    if (data.empty()) {
+        throw SerialCanException("PIDS_C no resp");
+    }
+    auto bindata = DecodeHex(data);
+    if (ReplyCmd(bindata) != 0x140) {
+        throw SerialCanException("PIDS_C wrong resp");
+    }
+    pidsC = PayloadInt(bindata);
+}
+
+void SerialCanDevice::PIDS_D() {
+    serialInterface->Write("0160\r");
+    std::string buf{};
+    std::string data = WaitForPrompt(buf, 2000);
+    while (data.ends_with("\r")) {
+        data = data.substr(0, data.size() - 1);
+    }
+    auto cutpos = data.find_last_of('\r');
+    if (cutpos != std::string::npos) {
+        data = data.substr(cutpos + 1);
+    }
+    if (data.empty()) {
+        throw SerialCanException("PIDS_D no resp");
+    }
+    auto bindata = DecodeHex(data);
+    if (ReplyCmd(bindata) != 0x160) {
+        throw SerialCanException("PIDS_D wrong resp");
+    }
+    pidsD = PayloadInt(bindata);
+}
+
+void SerialCanDevice::PIDS_E() {
+    serialInterface->Write("0180\r");
+    std::string buf{};
+    std::string data = WaitForPrompt(buf, 2000);
+    while (data.ends_with("\r")) {
+        data = data.substr(0, data.size() - 1);
+    }
+    auto cutpos = data.find_last_of('\r');
+    if (cutpos != std::string::npos) {
+        data = data.substr(cutpos + 1);
+    }
+    if (data.empty()) {
+        throw SerialCanException("PIDS_E no resp");
+    }
+    auto bindata = DecodeHex(data);
+    if (ReplyCmd(bindata) != 0x180) {
+        throw SerialCanException("PIDS_E wrong resp");
+    }
+    pidsE = PayloadInt(bindata);
+}
+
+void SerialCanDevice::PIDS_F() {
+    serialInterface->Write("01A0\r");
+    std::string buf{};
+    std::string data = WaitForPrompt(buf, 2000);
+    while (data.ends_with("\r")) {
+        data = data.substr(0, data.size() - 1);
+    }
+    auto cutpos = data.find_last_of('\r');
+    if (cutpos != std::string::npos) {
+        data = data.substr(cutpos + 1);
+    }
+    if (data.empty()) {
+        throw SerialCanException("PIDS_F no resp");
+    }
+    auto bindata = DecodeHex(data);
+    if (ReplyCmd(bindata) != 0x1A0) {
+        throw SerialCanException("PIDS_F wrong resp");
+    }
+    pidsF = PayloadInt(bindata);
+}
+
+void SerialCanDevice::PID9s() {
+    serialInterface->Write("0900\r");
+    std::string buf{};
+    std::string data = WaitForPrompt(buf, 2000);
+    while (data.ends_with("\r")) {
+        data = data.substr(0, data.size() - 1);
+    }
+    auto cutpos = data.find_last_of('\r');
+    if (cutpos != std::string::npos) {
+        data = data.substr(cutpos + 1);
+    }
+    if (data.empty()) {
+        throw SerialCanException("PID9s no resp");
+    }
+    auto bindata = DecodeHex(data);
+    if (ReplyCmd(bindata) != 0x900) {
+        throw SerialCanException("PID9s wrong resp");
+    }
+    pid9s = PayloadInt(bindata);
+}
+
+bool SerialCanDevice::HasPIDS_B() {
+    return pidsA & 1;
+}
+
+bool SerialCanDevice::HasPIDS_C() {
+    return pidsB & 1;
+}
+
+bool SerialCanDevice::HasPIDS_D() {
+    return pidsC & 1;
+}
+
+bool SerialCanDevice::HasPIDS_E() {
+    return pidsD & 1;
+}
+
+bool SerialCanDevice::HasPIDS_F() {
+    return pidsE & 1;
 }
 
 bool SerialCanDevice::AutoProtocol() {

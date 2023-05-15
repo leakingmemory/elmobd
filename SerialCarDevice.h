@@ -14,6 +14,8 @@ private:
 public:
     bool HasRPM() const;
     int RPM();
+    bool HasVIN() const;
+    std::string VIN();
 };
 
 

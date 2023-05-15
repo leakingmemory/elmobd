@@ -11,6 +11,9 @@ int main() {
     SerialCarDevice serialCarDevice{std::move(serialInterface)};
     std::cout << serialCarDevice.GetDeviceId() << "\n";
     std::cout << "Car voltage: " << serialCarDevice.GetVoltage() << "V\n";
+    if (serialCarDevice.HasVIN()) {
+        std::cout << "VIN: " << serialCarDevice.VIN() << "\n";
+    }
     {
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(10s);
