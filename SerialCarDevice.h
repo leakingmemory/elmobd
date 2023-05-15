@@ -7,12 +7,57 @@
 
 #include "SerialCanDevice.h"
 
+struct OBDStatus {
+    uint8_t DTCs;
+    /**/
+    bool ComponentTestAvailable : 1;
+    bool FuelSystemTestAvailable : 1;
+    bool MisfireTestAvailable : 1;
+    bool EGROrVVTTestAvailable : 1;
+    bool OxygenSensorHeaterTestAvailable : 1;
+    bool OxygenSensorTestAvailable : 1;
+    bool GasolineParticulateFilterTestAvailable : 1;
+    bool SecondaryAirSystemTestAvailable : 1;
+    /**/
+    bool ComponentTestDone : 1;
+    bool FuelSystemTestDone : 1;
+    bool MisfireTestDone : 1;
+    bool EGROrVVTTestDone : 1;
+    bool OxygenSensorHeaterTestDone : 1;
+    bool OxygenSensorTestDone : 1;
+    bool GasolineParticulateFilterTestDone : 1;
+    bool SecondaryAirSystemTestDone : 1;
+    /**/
+    bool EvaporativeSystemTestAvailable : 1;
+    bool HeatedCatalystTestAvailable : 1;
+    bool CatalystTestAvailable : 1;
+    bool PMFilterMonitoringTestAvailable : 1;
+    bool ExhaustGasSensorTestAvailable : 1;
+    bool BoostPressureTestAvailable : 1;
+    bool NOxSCRMonitorTestAvailable : 1;
+    bool NMHCCatalystTestAvailable : 1;
+    /**/
+    bool EvaporativeSystemTestDone : 1;
+    bool HeatedCatalystTestDone : 1;
+    bool CatalystTestDone : 1;
+    bool PMFilterMonitoringTestDone : 1;
+    bool ExhaustGasSensorTestDone : 1;
+    bool BoostPressureTestDone : 1;
+    bool NOxSCRMonitorTestDone : 1;
+    bool NMHCCatalystTestDone : 1;
+    /**/
+    bool MIL : 1; // Check engine light
+    bool CompressionIgnition : 1;
+};
+
 class SerialCarDevice : public SerialCanDevice {
 public:
     SerialCarDevice(SerialInterface &&mv);
 private:
 public:
+    bool HasStatus() const;
     bool HasRPM() const;
+    OBDStatus Status();
     int RPM();
     bool HasVIN() const;
     std::string VIN();
