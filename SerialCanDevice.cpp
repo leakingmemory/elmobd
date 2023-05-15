@@ -243,7 +243,7 @@ void SerialCanDevice::Drain() {
     }
 }
 
-bool SerialCanDevice::WaitForLine(std::string &buf, std::string &ln, int timeout_ms) {
+bool SerialCanDevice::WaitForLine(std::string &buf, std::string &ln, int timeout_ms) const {
     auto timer = std::chrono::system_clock::now();
     {
         std::chrono::milliseconds duration{timeout_ms};
@@ -283,7 +283,7 @@ bool SerialCanDevice::WaitForLine(std::string &buf, std::string &ln, int timeout
     }
 }
 
-std::string SerialCanDevice::WaitForPrompt(std::string &buf, int timeout_ms) {
+std::string SerialCanDevice::WaitForPrompt(std::string &buf, int timeout_ms) const {
     auto timer = std::chrono::system_clock::now();
     {
         std::chrono::milliseconds duration{timeout_ms};

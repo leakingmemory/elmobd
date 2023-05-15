@@ -37,8 +37,8 @@ public:
 private:
     void Drain();
 protected:
-    bool WaitForLine(std::string &buf, std::string &ln, int timeout_ms);
-    std::string WaitForPrompt(std::string &buf, int timeout_ms);
+    bool WaitForLine(std::string &buf, std::string &ln, int timeout_ms) const;
+    std::string WaitForPrompt(std::string &buf, int timeout_ms) const;
     static std::vector<std::string> SplitLines(const std::string &str);
 private:
     void Reset();

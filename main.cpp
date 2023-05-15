@@ -4,6 +4,31 @@
 #include "SerialInterface.h"
 #include "SerialCarDevice.h"
 
+void PrintFuelSystemStatus(FuelSystemStatusValue v) {
+    switch (v) {
+        case FuelSystemStatusValue::OFF:
+            std::cout << "Off";
+            break;
+        case FuelSystemStatusValue::OPEN_LOOP_INSUFFICIENT_ENG_TEMP:
+            std::cout << "Open loop due to insufficien eng temp";
+            break;
+        case FuelSystemStatusValue::CLOSED_LOOP:
+            std::cout << "Closed loop (normal mode)";
+            break;
+        case FuelSystemStatusValue::OPEN_LOOP_DUE_ENG_LOAD_OR_FUEL_CUT:
+            std::cout << "Open loop due to engine load or cutoff";
+            break;
+        case FuelSystemStatusValue::OPEN_LOOP_DUE_FAILURE:
+            std::cout << "Open loop due to failure";
+            break;
+        case FuelSystemStatusValue::CLOSED_LOOP_WITH_FAULT:
+            std::cout << "Closed loop with fault";
+            break;
+        default:
+            std::cout << "Invalid";
+    }
+}
+
 int main() {
     SerialInterface serialInterface{"/dev/ttyUSB0"};
     serialInterface.SetSpeed(SerialSpeed::S38400);
@@ -12,11 +37,11 @@ int main() {
     std::cout << serialCarDevice.GetDeviceId() << "\n";
     std::cout << "Car voltage: " << serialCarDevice.GetVoltage() << "V\n";
     if (serialCarDevice.HasVIN()) {
-        std::cout << "VIN: " << serialCarDevice.VIN() << "\n";
+        std::cout << "VIN: " << serialCarDevice.GetVIN() << "\n";
     }
     auto hasStatus = serialCarDevice.HasStatus();
     if (hasStatus) {
-        OBDStatus status = serialCarDevice.Status();
+        OBDStatus status = serialCarDevice.GetStatus();
         std::cout << "MIL/CEL - Check engine light: " << (status.MIL ? "Illuminated/Fault" : "Off/Good") << "\n";
         std::cout << "Num confirmed DTCs: " << ((int )status.DTCs) << "\n";
         std::cout << "Ignition type / fuel type: " << (status.CompressionIgnition ? "Compression ignition, typical diesel\n" : "Spark ignition, typical gasoline\n");
@@ -125,9 +150,103 @@ int main() {
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(5s);
     }
+    auto hasFuelSystemStatus = serialCarDevice.HasFuelSystemStatus();
+    auto hasCalculatedLoad = serialCarDevice.HasCalculatedLoad();
+    auto hasCoolantTemp = serialCarDevice.HasCoolantTemperature();
+    auto hasShortTermFuel1 = serialCarDevice.HasShortTermFuelTrimBank1();
+    auto hasLongTermFuel1 = serialCarDevice.HasLongTermFuelTrimBank1();
+    auto hasShortTermFuel2 = serialCarDevice.HasShortTermFuelTrimBank2();
+    auto hasLongTermFuel2 = serialCarDevice.HasLongTermFuelTrimBank2();
+    auto hasFuelGaugePress = serialCarDevice.HasFuelGaugePressure();
+    auto hasIntakeManAbsPress = serialCarDevice.HasIntakeManifoldAbsPressure();
     auto hasRPM = serialCarDevice.HasRPM();
+    FuelSystemStatus fuelSystemStatus{.system1 = FuelSystemStatusValue::INVALID, .system2 = FuelSystemStatusValue::INVALID};
     while (true) {
-        auto rpm = hasRPM ? serialCarDevice.RPM() : -1;
+        auto rpm = hasRPM ? serialCarDevice.GetRPM() : -1;
+        auto calcLoad = hasCalculatedLoad ? serialCarDevice.GetCalculatedLoad() : -1;
+        auto coolant = hasCoolantTemp ? serialCarDevice.GetCoolantTemperature() : -1;
+        auto shortTermFuel1 = hasShortTermFuel1 ? serialCarDevice.GetShortTermFuelTrimBank1() : -1;
+        auto longTermFuel1 = hasLongTermFuel1 ? serialCarDevice.GetLongTermFuelTrimBank1() : -1;
+        auto shortTermFuel2 = hasShortTermFuel2 ? serialCarDevice.GetShortTermFuelTrimBank2() : -1;
+        auto longTermFuel2 = hasLongTermFuel2 ? serialCarDevice.GetLongTermFuelTrimBank2() : -1;
+        auto fuelGaugePress = hasFuelGaugePress ? serialCarDevice.GetFuelGaugePressure() : -1;
+        auto intakeManAbsPress = hasIntakeManAbsPress ? serialCarDevice.GetIntakeManifoldAbsPressure() : -1;
+        if (hasFuelSystemStatus) {
+            fuelSystemStatus = serialCarDevice.GetFuelSystemStatus();
+            std::cout << " Fuel sys 1/2=";
+            PrintFuelSystemStatus(fuelSystemStatus.system1);
+            std::cout << " / ";
+            PrintFuelSystemStatus(fuelSystemStatus.system2);
+        }
+        if (hasCalculatedLoad) {
+            std::cout << " calc-load=" << calcLoad << "%";
+        }
+        if (hasCoolantTemp) {
+            std::cout << " coolant=" << coolant << "C";
+        }
+        if (hasShortTermFuel1 || hasLongTermFuel1 || hasShortTermFuel2 || hasLongTermFuel2) {
+            std::cout << " fuel-trim(";
+            bool prev = hasShortTermFuel1;
+            if (prev) {
+                std::cout << "short-term-bank1";
+            }
+            if (hasLongTermFuel1) {
+                if (prev) {
+                    std::cout << "/lt1";
+                } else {
+                    std::cout << "long-term-bank1";
+                }
+                prev = true;
+            }
+            if (hasShortTermFuel2) {
+                if (prev) {
+                    std::cout << "/st2";
+                } else {
+                    std::cout << "short-term-bank2";
+                }
+                prev = true;
+            }
+            if (hasLongTermFuel2) {
+                if (prev) {
+                    std::cout << "/lt2";
+                } else {
+                    std::cout << "long-term-bank2";
+                }
+            }
+            std::cout << ")=";
+            prev = hasShortTermFuel1;
+            if (prev) {
+                std::cout << shortTermFuel1 << "%";
+            }
+            if (hasLongTermFuel1) {
+                if (prev) {
+                    std::cout << "/";
+                } else {
+                    prev = true;
+                }
+                std::cout << longTermFuel1 << "%";
+            }
+            if (hasShortTermFuel2) {
+                if (prev) {
+                    std::cout << "/";
+                } else {
+                    prev = true;
+                }
+                std::cout << shortTermFuel2 << "%";
+            }
+            if (hasLongTermFuel2) {
+                if (prev) {
+                    std::cout << "/";
+                }
+                std::cout << longTermFuel2 << "%";
+            }
+        }
+        if (hasFuelGaugePress) {
+            std::cout << " fuel-press=" << fuelGaugePress << "kPa";
+        }
+        if (hasIntakeManAbsPress) {
+            std::cout << " intake-man-press=" << intakeManAbsPress << "kPa";
+        }
         if (hasRPM) {
             std::cout << " RPM=" << rpm;
             std::cout << "\n";

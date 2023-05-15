@@ -50,17 +50,50 @@ struct OBDStatus {
     bool CompressionIgnition : 1;
 };
 
+enum class FuelSystemStatusValue {
+    OFF,
+    OPEN_LOOP_INSUFFICIENT_ENG_TEMP,
+    CLOSED_LOOP, // O2 sensor determ fuel mix
+    OPEN_LOOP_DUE_ENG_LOAD_OR_FUEL_CUT,
+    OPEN_LOOP_DUE_FAILURE,
+    CLOSED_LOOP_WITH_FAULT,
+    INVALID
+};
+
+struct FuelSystemStatus {
+    FuelSystemStatusValue system1;
+    FuelSystemStatusValue system2;
+};
+
 class SerialCarDevice : public SerialCanDevice {
 public:
     SerialCarDevice(SerialInterface &&mv);
 private:
 public:
     bool HasStatus() const;
+    bool HasFuelSystemStatus() const;
+    bool HasCalculatedLoad() const;
+    bool HasCoolantTemperature() const;
+    bool HasShortTermFuelTrimBank1() const;
+    bool HasLongTermFuelTrimBank1() const;
+    bool HasShortTermFuelTrimBank2() const;
+    bool HasLongTermFuelTrimBank2() const;
+    bool HasFuelGaugePressure() const;
+    bool HasIntakeManifoldAbsPressure() const;
     bool HasRPM() const;
-    OBDStatus Status();
-    int RPM();
+    OBDStatus GetStatus() const;
+    FuelSystemStatus GetFuelSystemStatus() const;
+    int GetCalculatedLoad() const;
+    int GetCoolantTemperature() const;
+    int GetShortTermFuelTrimBank1() const;
+    int GetLongTermFuelTrimBank1() const;
+    int GetShortTermFuelTrimBank2() const;
+    int GetLongTermFuelTrimBank2() const;
+    int GetFuelGaugePressure() const;
+    int GetIntakeManifoldAbsPressure() const;
+    int GetRPM() const;
     bool HasVIN() const;
-    std::string VIN();
+    std::string GetVIN() const;
 };
 
 
