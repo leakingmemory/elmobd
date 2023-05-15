@@ -107,6 +107,46 @@ bool SerialCarDevice::HasRPM() const {
     }
 }
 
+bool SerialCarDevice::HasSpeed() const {
+    if ((pidsA & 0x00080000) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool SerialCarDevice::HasTimingAdvance() const {
+    if ((pidsA & 0x00040000) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool SerialCarDevice::HasIntakeAirTemperature() const {
+    if ((pidsA & 0x00020000) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool SerialCarDevice::HasMassAirFlow() const {
+    if ((pidsA & 0x00010000) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool SerialCarDevice::HasThrottlePos() const {
+    if ((pidsA & 0x00008000) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool SerialCarDevice::HasVIN() const {
     if ((pid9s & 0x40000000) != 0) {
         return true;
@@ -358,6 +398,92 @@ int SerialCarDevice::GetRPM() const {
     auto rawRpm = PayloadInt(msg);
     WaitForPrompt(buf, 1000);
     return (int) (rawRpm / 4);
+}
+
+int SerialCarDevice::GetSpeed() const {
+    serialInterface->Write("010D\r");
+    std::string buf{};
+    std::string ln{};
+    if (!WaitForLine(buf, ln, 200)) {
+        throw SerialCarException("Speed no resp");
+    }
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != 0x10D) {
+        throw SerialCarException("Speed wrong resp");
+    }
+    int speed = (int) PayloadInt(msg);
+    WaitForPrompt(buf, 1000);
+    return speed;
+}
+
+float SerialCarDevice::GetTimingAdvance() const {
+    serialInterface->Write("010E\r");
+    std::string buf{};
+    std::string ln{};
+    if (!WaitForLine(buf, ln, 200)) {
+        throw SerialCarException("Timing advance no resp");
+    }
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != 0x10E) {
+        throw SerialCarException("Timing advance wrong resp");
+    }
+    float adv = (float) PayloadInt(msg);
+    adv /= 2;
+    adv -= 64.0f;
+    WaitForPrompt(buf, 1000);
+    return adv;
+}
+
+int SerialCarDevice::GetIntakeAirTemperature() const {
+    serialInterface->Write("010F\r");
+    std::string buf{};
+    std::string ln{};
+    if (!WaitForLine(buf, ln, 200)) {
+        throw SerialCarException("Intake air temp no resp");
+    }
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != 0x10F) {
+        throw SerialCarException("Intake air temp wrong resp");
+    }
+    int temp = (int) PayloadInt(msg);
+    temp -= 40;
+    WaitForPrompt(buf, 1000);
+    return temp;
+}
+
+float SerialCarDevice::GetMassAirFlow() const {
+    serialInterface->Write("0110\r");
+    std::string buf{};
+    std::string ln{};
+    if (!WaitForLine(buf, ln, 200)) {
+        throw SerialCarException("Mass air flow no resp");
+    }
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != 0x110) {
+        throw SerialCarException("Mass air flow wrong resp");
+    }
+    float massflow = (float) PayloadInt(msg);
+    massflow /= 100.0f;
+    WaitForPrompt(buf, 1000);
+    return massflow;
+}
+
+float SerialCarDevice::GetThrottlePos() const {
+    serialInterface->Write("0111\r");
+    std::string buf{};
+    std::string ln{};
+    if (!WaitForLine(buf, ln, 200)) {
+        throw SerialCarException("Throttle pos no resp");
+    }
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != 0x111) {
+        throw SerialCarException("Throttle pos wrong resp");
+    }
+    float thr = (float) PayloadInt(msg);
+    thr *= 100.0f;
+    thr /= 255.0f;
+    WaitForPrompt(buf, 1000);
+    return thr;
 }
 
 std::string SerialCarDevice::GetVIN() const {

@@ -81,6 +81,11 @@ public:
     bool HasFuelGaugePressure() const;
     bool HasIntakeManifoldAbsPressure() const;
     bool HasRPM() const;
+    bool HasSpeed() const;
+    bool HasTimingAdvance() const;
+    bool HasIntakeAirTemperature() const;
+    bool HasMassAirFlow() const;
+    bool HasThrottlePos() const;
     OBDStatus GetStatus() const;
     FuelSystemStatus GetFuelSystemStatus() const;
     int GetCalculatedLoad() const;
@@ -92,6 +97,11 @@ public:
     int GetFuelGaugePressure() const;
     int GetIntakeManifoldAbsPressure() const;
     int GetRPM() const;
+    int GetSpeed() const;
+    float GetTimingAdvance() const;
+    int GetIntakeAirTemperature() const;
+    float GetMassAirFlow() const;
+    float GetThrottlePos() const;
     bool HasVIN() const;
     std::string GetVIN() const;
 };

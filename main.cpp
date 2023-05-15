@@ -160,6 +160,11 @@ int main() {
     auto hasFuelGaugePress = serialCarDevice.HasFuelGaugePressure();
     auto hasIntakeManAbsPress = serialCarDevice.HasIntakeManifoldAbsPressure();
     auto hasRPM = serialCarDevice.HasRPM();
+    auto hasSpeed = serialCarDevice.HasSpeed();
+    auto hasTimingAdv = serialCarDevice.HasTimingAdvance();
+    auto hasIntakeAirTemp = serialCarDevice.HasIntakeAirTemperature();
+    auto hasMassFlow = serialCarDevice.HasMassAirFlow();
+    auto hasThrottle = serialCarDevice.HasThrottlePos();
     FuelSystemStatus fuelSystemStatus{.system1 = FuelSystemStatusValue::INVALID, .system2 = FuelSystemStatusValue::INVALID};
     while (true) {
         auto rpm = hasRPM ? serialCarDevice.GetRPM() : -1;
@@ -171,6 +176,11 @@ int main() {
         auto longTermFuel2 = hasLongTermFuel2 ? serialCarDevice.GetLongTermFuelTrimBank2() : -1;
         auto fuelGaugePress = hasFuelGaugePress ? serialCarDevice.GetFuelGaugePressure() : -1;
         auto intakeManAbsPress = hasIntakeManAbsPress ? serialCarDevice.GetIntakeManifoldAbsPressure() : -1;
+        auto speed = hasSpeed ? serialCarDevice.GetSpeed() : -1;
+        auto timingAdv = hasTimingAdv ? serialCarDevice.GetTimingAdvance() : -1.0f;
+        auto intakeAirTemp = hasIntakeAirTemp ? serialCarDevice.GetIntakeAirTemperature() : -1;
+        auto massFlow = hasMassFlow ? serialCarDevice.GetMassAirFlow() : -1.0f;
+        auto throttle = hasThrottle ? serialCarDevice.GetThrottlePos() : -1.0f;
         if (hasFuelSystemStatus) {
             fuelSystemStatus = serialCarDevice.GetFuelSystemStatus();
             std::cout << " Fuel sys 1/2=";
@@ -249,10 +259,23 @@ int main() {
         }
         if (hasRPM) {
             std::cout << " RPM=" << rpm;
-            std::cout << "\n";
-        } else {
-            std::cout << "\n";
         }
+        if (hasSpeed) {
+            std::cout << " speed=" << speed << "kmh";
+        }
+        if (hasTimingAdv) {
+            std::cout << " timing-adv=" << timingAdv;
+        }
+        if (hasIntakeAirTemp) {
+            std::cout << " intake-air-temp=" << intakeAirTemp << "C";
+        }
+        if (hasMassFlow) {
+            std::cout << " flow=" << massFlow << "g/s";
+        }
+        if (hasThrottle) {
+            std::cout << " throttle=" << throttle << "%";
+        }
+        std::cout << "\n";
     }
     return 0;
 }
