@@ -147,6 +147,14 @@ bool SerialCarDevice::HasThrottlePos() const {
     }
 }
 
+bool SerialCarDevice::HasO2Sensor(int n) const {
+    if (n < 8 && (pidsA & (0x00001000 >> n)) != 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool SerialCarDevice::HasVIN() const {
     if ((pid9s & 0x40000000) != 0) {
         return true;
@@ -484,6 +492,59 @@ float SerialCarDevice::GetThrottlePos() const {
     thr /= 255.0f;
     WaitForPrompt(buf, 1000);
     return thr;
+}
+
+O2Sensor SerialCarDevice::GetO2Sensor(int n) const {
+    {
+        std::string q;
+        switch (n) {
+            case 0:
+                q = "0114\r";
+                break;
+            case 1:
+                q = "0115\r";
+                break;
+            case 2:
+                q = "0116\r";
+                break;
+            case 3:
+                q = "0117\r";
+                break;
+            case 4:
+                q = "0118\r";
+                break;
+            case 5:
+                q = "0119\r";
+                break;
+            case 6:
+                q = "011A\r";
+                break;
+            case 7:
+                q = "011B\r";
+                break;
+            default:
+                return {.Voltage = 0.0f, .ShortTermFuelTrim = 0};
+        }
+        serialInterface->Write(q);
+    }
+    std::string buf{};
+    std::string ln{};
+    if (!WaitForLine(buf, ln, 200)) {
+        throw SerialCarException("O2 no resp");
+    }
+    auto msg = DecodeHex(ln);
+    if (ReplyCmd(msg) != (0x114 + n)) {
+        throw SerialCarException("O2 wrong resp");
+    }
+    uint16_t raw = (uint16_t) PayloadInt(msg);
+    float voltage = (float) ((raw >> 8) & 0xFF);
+    int fuelTrim = (int) (raw & 0xFF);
+    voltage /= 200;
+    fuelTrim *= 100;
+    fuelTrim /= 128;
+    fuelTrim -= 100;
+    WaitForPrompt(buf, 1000);
+    return {.Voltage = voltage, .ShortTermFuelTrim = fuelTrim};
 }
 
 std::string SerialCarDevice::GetVIN() const {

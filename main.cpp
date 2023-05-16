@@ -146,6 +146,29 @@ int main() {
         }
         std::cout << "\n";
     }
+    bool anyO2{false};
+    bool hasO2[8];
+    for (int i = 0; i < 8; i++) {
+        hasO2[i] = serialCarDevice.HasO2Sensor(i);
+        if (hasO2[i]) {
+            anyO2 = true;
+        }
+    }
+    if (anyO2) {
+        std::cout << "O2 sensors available: ";
+        bool notFirst{false};
+        for (int i = 0; i < 8; i++) {
+            if (hasO2[i]) {
+                if (notFirst) {
+                    std::cout << ", ";
+                } else {
+                    notFirst = true;
+                }
+                std::cout << i;
+            }
+        }
+        std::cout << "\n";
+    }
     {
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(5s);
@@ -274,6 +297,21 @@ int main() {
         }
         if (hasThrottle) {
             std::cout << " throttle=" << throttle << "%";
+        }
+        if (anyO2) {
+            std::cout << " O2(V/fuel-trim)=";
+            bool notFirst{false};
+            for (int i = 0; i < 8; i++) {
+                if (hasO2[i]) {
+                    if (notFirst) {
+                        std::cout << ",";
+                    } else {
+                        notFirst = true;
+                    }
+                    auto sens = serialCarDevice.GetO2Sensor(i);
+                    std::cout << sens.Voltage << "V/" << sens.ShortTermFuelTrim << "%";
+                }
+            }
         }
         std::cout << "\n";
     }

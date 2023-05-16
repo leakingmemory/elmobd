@@ -65,6 +65,11 @@ struct FuelSystemStatus {
     FuelSystemStatusValue system2;
 };
 
+struct O2Sensor {
+    float Voltage;
+    int ShortTermFuelTrim;
+};
+
 class SerialCarDevice : public SerialCanDevice {
 public:
     SerialCarDevice(SerialInterface &&mv);
@@ -86,6 +91,7 @@ public:
     bool HasIntakeAirTemperature() const;
     bool HasMassAirFlow() const;
     bool HasThrottlePos() const;
+    bool HasO2Sensor(int n) const;
     OBDStatus GetStatus() const;
     FuelSystemStatus GetFuelSystemStatus() const;
     int GetCalculatedLoad() const;
@@ -102,6 +108,7 @@ public:
     int GetIntakeAirTemperature() const;
     float GetMassAirFlow() const;
     float GetThrottlePos() const;
+    O2Sensor GetO2Sensor(int n) const;
     bool HasVIN() const;
     std::string GetVIN() const;
 };
