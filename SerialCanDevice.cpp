@@ -18,7 +18,7 @@ public:
     }
 };
 
-SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
+SerialCanDevice::SerialCanDevice(SerialInterface &&mv, const std::string &protocol) {
     serialInterface = std::make_unique<SerialInterface>(std::move(mv));
     {
         auto retry = 10;
@@ -49,7 +49,11 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
     protocols.insert_or_assign("8", "ISO_14230_4_11bit_250k");
     protocols.insert_or_assign("9", "ISO_14230_4_29bit_250k");
     protocols.insert_or_assign("A", "SAE_J1939");
-    DetectProtocol();
+    if (protocol.empty()) {
+        DetectProtocol();
+    } else {
+        SetProtocol(protocol);
+    }
     std::cout << "Found PIDS_A " << std::hex << pidsA << std::dec << "\n";
     if (HasPIDS_B()) {
         PIDS_B();
@@ -73,6 +77,26 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv) {
     }
     PID9s();
     std::cout << "Found PID9s " << std::hex << pid9s << std::dec << "\n";
+}
+
+void SerialCanDevice::SetProtocol(const std::string &protocol) {
+    if (protocol.size() == 1) {
+        if (!TrySetProtocol(protocol)) {
+            throw SerialCanException("Unable to set protocol");
+        }
+        this->protocol = protocol;
+    } else {
+        for (auto p : protocols) {
+            if (p.second == protocol) {
+                if (!TrySetProtocol(p.first)) {
+                    throw SerialCanException("Unable to set protocol");
+                }
+                this->protocol = p.first;
+                return;
+            }
+        }
+        throw SerialCanException("Unknown protocol");
+    }
 }
 
 void SerialCanDevice::DetectProtocol() {

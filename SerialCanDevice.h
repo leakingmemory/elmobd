@@ -26,7 +26,8 @@ protected:
     uint32_t pidsF{0}; // A1 - C0
     uint32_t pid9s{0};
 public:
-    SerialCanDevice(SerialInterface &&mv);
+    SerialCanDevice(SerialInterface &&mv, const std::string &protocol = "");
+    void SetProtocol(const std::string &protocol);
     void DetectProtocol();
     ~SerialCanDevice();
     static std::string DecodeHex(const std::string &);

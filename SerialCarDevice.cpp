@@ -16,7 +16,7 @@ public:
     }
 };
 
-SerialCarDevice::SerialCarDevice(SerialInterface &&mv) : SerialCanDevice(std::move(mv)) {
+SerialCarDevice::SerialCarDevice(SerialInterface &&mv, const std::string &protocol) : SerialCanDevice(std::move(mv), protocol) {
 }
 
 bool SerialCarDevice::HasStatus() const {

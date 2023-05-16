@@ -72,7 +72,7 @@ struct O2Sensor {
 
 class SerialCarDevice : public SerialCanDevice {
 public:
-    SerialCarDevice(SerialInterface &&mv);
+    SerialCarDevice(SerialInterface &&mv, const std::string &protocol = "");
 private:
 public:
     bool HasStatus() const;
