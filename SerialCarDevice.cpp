@@ -381,7 +381,7 @@ int SerialCarDevice::GetIntakeManifoldAbsPressure() const {
     serialInterface->Write("010B\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 300)) {
         throw SerialCarException("Intake manifold abs pressure no resp");
     }
     auto msg = DecodeHex(ln);
