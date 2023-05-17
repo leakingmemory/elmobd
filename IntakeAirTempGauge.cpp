@@ -10,6 +10,7 @@ IntakeAirTempGauge::IntakeAirTempGauge(const std::shared_ptr<CarDatasource> &ser
     max = 40;
     mark = 10;
     markOffset = -40;
+    caption = "IAT (Celsius)";
 }
 
 void IntakeAirTempGauge::Update() {

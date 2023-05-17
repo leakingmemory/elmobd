@@ -8,6 +8,7 @@
 ManPressGauge::ManPressGauge(const std::shared_ptr<CarDatasource> &serialCarDevice)  : serialCarDevice(serialCarDevice) {
     min = 20.0f;
     max = 110.0f;
+    caption = "Man press (kPa)";
 }
 
 void ManPressGauge::Update() {

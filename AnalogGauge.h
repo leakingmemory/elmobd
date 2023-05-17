@@ -27,6 +27,9 @@ protected:
     float centerY{0.9f};
     float needle{0.9f};
     float markLength{0.05f};
+    float captionX{0.5};
+    float captionY{0.5};
+    std::string caption{};
 private:
     float currentValue{75.0f};
     float needleValue{1.0f};

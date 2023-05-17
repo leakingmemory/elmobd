@@ -87,6 +87,22 @@ void AnalogGauge::DrawBackground(int x, int y, int width, int height) {
         y2 += centerY + y;
         XDrawLine(display, window, gc, x1, y1, x2, y2);
     }
+    if (!caption.empty()) {
+        float tx = captionX * width;
+        float ty = captionY * height;
+        tx += x;
+        ty += y;
+        auto *font = XQueryFont(display, XGContextFromGC(gc));
+        auto tw = XTextWidth(font, caption.c_str(), caption.size());
+        tx -= tw / 2;
+        XTextItem textItem{
+            .chars = (char *) caption.c_str(),
+            .nchars = (int) caption.size(),
+            .delta = 0,
+            .font = None
+        };
+        XDrawText(display, window, gc, tx, ty, &textItem, 1);
+    }
 }
 
 void AnalogGauge::BlankForeground(int x, int y, int width, int height) {

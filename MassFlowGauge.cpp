@@ -8,6 +8,7 @@
 MassFlowGauge::MassFlowGauge(const std::shared_ptr<CarDatasource> &serialCarDevice)  : serialCarDevice(serialCarDevice) {
     min = 0;
     max = 100;
+    caption = "Air flow (g/s)";
 }
 
 void MassFlowGauge::Update() {
