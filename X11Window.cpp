@@ -11,18 +11,19 @@ std::shared_ptr<X11Window> X11Window::Create(const std::shared_ptr<X11Display> &
     return std::make_shared<X11WindowImpl>(display, screenNum, width, height, x, y);
 }
 
-void X11Window::Add(const std::shared_ptr<Widget> &widget) {
-    widgets.emplace_back(widget);
+void X11Window::Add(const std::shared_ptr<Widget> &widget, int x, int y, int width, int height) {
+    WindowWidget windowWidget{.x = x, .y = y, .width = width, .height = height, .widget = widget};
+    widgets.emplace_back(windowWidget);
     widget->Init(ImplRef());
 }
 
 void X11Window::RenderingCycle() {
     for (const auto &widget : widgets) {
-        widget->BlankForeground(0, 0, 200, 200);
-        widget->Mutate();
-        widget->DrawForeground(0, 0, 200, 200);
-        widget->DrawBackground(0, 0, 200, 200);
-        widget->DrawForeground(0, 0, 200, 200);
+        widget.widget->BlankForeground(widget.x, widget.y, widget.width, widget.height);
+        widget.widget->Mutate();
+        widget.widget->DrawForeground(widget.x, widget.y, widget.width, widget.height);
+        widget.widget->DrawBackground(widget.x, widget.y, widget.width, widget.height);
+        widget.widget->DrawForeground(widget.x, widget.y, widget.width, widget.height);
     }
     auto *display = this->display->Impl().display;
     XFlush(display);

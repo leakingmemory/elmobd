@@ -14,13 +14,18 @@ class Widget;
 class X11GCImpl;
 class AnalogGauge;
 
+struct WindowWidget {
+    int x, y, width, height;
+    std::shared_ptr<Widget> widget;
+};
+
 class X11Window {
     friend X11WindowImpl;
     friend X11GCImpl;
     friend AnalogGauge;
 private:
     std::shared_ptr<X11Display> display;
-    std::vector<std::shared_ptr<Widget>> widgets;
+    std::vector<WindowWidget> widgets;
     int screenNum;
     X11Window(const std::shared_ptr<X11Display> &display, int screenNum) : display(display), screenNum(screenNum) {}
 public:
@@ -28,7 +33,7 @@ public:
     virtual ~X11Window() = default;
     virtual const X11WindowImpl &Impl() const = 0;
     virtual std::shared_ptr<X11WindowImpl> ImplRef() = 0;
-    void Add(const std::shared_ptr<Widget> &widget);
+    void Add(const std::shared_ptr<Widget> &widget, int x, int y, int width, int height);
     void RenderingCycle();
     int GetScreenNum() const {
         return screenNum;

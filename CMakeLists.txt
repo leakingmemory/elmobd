@@ -12,7 +12,14 @@ target_link_libraries(elmobd PRIVATE elmobdobj)
 add_executable(elmobddisplay elmobddisplay.cpp X11Display.cpp X11Display.h X11Window.cpp X11Window.h
         X11DisplayImpl.cpp X11DisplayImpl.h Widget.h AnalogGauge.cpp AnalogGauge.h X11GC.cpp X11GC.h
         X11GCImpl.cpp X11GCImpl.h X11WindowImpl.cpp X11WindowImpl.h Meter.h
-        ManPressGauge.cpp ManPressGauge.h)
+        ManPressGauge.cpp ManPressGauge.h MassFlowGauge.cpp MassFlowGauge.h
+        IntakeAirTempGauge.cpp IntakeAirTempGauge.h FuelTrimGauge.cpp FuelTrimGauge.h
+        ShortTermFuelTrimGauge.cpp ShortTermFuelTrimGauge.h
+        Bank1ShortTermFuelTrimGauge.cpp Bank1ShortTermFuelTrimGauge.h
+        Bank2ShortTermFuelTrimGauge.cpp Bank2ShortTermFuelTrimGauge.h
+        LongTermFuelTrimGauge.cpp LongTermFuelTrimGauge.h
+        Bank1LongTermFuelTrimGauge.cpp Bank1LongTermFuelTrimGauge.h
+        Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h)
 target_link_libraries(elmobddisplay PRIVATE elmobdobj)
 
 target_link_libraries(elmobddisplay PRIVATE -lX11)

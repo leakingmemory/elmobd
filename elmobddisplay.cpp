@@ -5,6 +5,12 @@
 #include "X11Display.h"
 #include "X11Window.h"
 #include "ManPressGauge.h"
+#include "MassFlowGauge.h"
+#include "IntakeAirTempGauge.h"
+#include "Bank1ShortTermFuelTrimGauge.h"
+#include "Bank2ShortTermFuelTrimGauge.h"
+#include "Bank1LongTermFuelTrimGauge.h"
+#include "Bank2LongTermFuelTrimGauge.h"
 #include "SerialInterface.h"
 #include "SerialCarDevice.h"
 #include <memory>
@@ -32,9 +38,51 @@ int main() {
     auto window = X11Window::Create(display, screen, width, height, 0, 0);
     std::vector<std::shared_ptr<Meter>> meters{};
     {
-        auto gauge = std::make_shared<ManPressGauge>(serialCarDevice);
-        window->Add(gauge);
-        meters.emplace_back(gauge);
+        int x = 0;
+        if (serialCarDevice->HasIntakeManifoldAbsPressure()) {
+            auto gauge = std::make_shared<ManPressGauge>(serialCarDevice);
+            window->Add(gauge, x, 0, 200, 200);
+            x += 200;
+            meters.emplace_back(gauge);
+        }
+        if (serialCarDevice->HasMassAirFlow()) {
+            auto gauge = std::make_shared<MassFlowGauge>(serialCarDevice);
+            window->Add(gauge, x, 0, 200, 200);
+            x += 200;
+            meters.emplace_back(gauge);
+        }
+        if (serialCarDevice->HasIntakeAirTemperature() ||
+            serialCarDevice->HasShortTermFuelTrimBank1() ||
+            serialCarDevice->HasShortTermFuelTrimBank2() ||
+            serialCarDevice->HasLongTermFuelTrimBank1() ||
+            serialCarDevice->HasLongTermFuelTrimBank2()) {
+            if (serialCarDevice->HasIntakeAirTemperature()) {
+                auto gauge = std::make_shared<IntakeAirTempGauge>(serialCarDevice);
+                window->Add(gauge, x, 0, 100, 100);
+                meters.emplace_back(gauge);
+            }
+            if (serialCarDevice->HasShortTermFuelTrimBank1()) {
+                auto gauge = std::make_shared<Bank1ShortTermFuelTrimGauge>(serialCarDevice);
+                window->Add(gauge, x, 100, 50, 50);
+                meters.emplace_back(gauge);
+            }
+            if (serialCarDevice->HasShortTermFuelTrimBank2()) {
+                auto gauge = std::make_shared<Bank2ShortTermFuelTrimGauge>(serialCarDevice);
+                window->Add(gauge, x + 50, 100, 50, 50);
+                meters.emplace_back(gauge);
+            }
+            if (serialCarDevice->HasLongTermFuelTrimBank1()) {
+                auto gauge = std::make_shared<Bank1LongTermFuelTrimGauge>(serialCarDevice);
+                window->Add(gauge, x, 150, 50, 50);
+                meters.emplace_back(gauge);
+            }
+            if (serialCarDevice->HasLongTermFuelTrimBank2()) {
+                auto gauge = std::make_shared<Bank2LongTermFuelTrimGauge>(serialCarDevice);
+                window->Add(gauge, x + 50, 150, 50, 50);
+                meters.emplace_back(gauge);
+            }
+            x += 100;
+        }
     }
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(1s);
