@@ -3,7 +3,7 @@
 //
 
 #include "Bank1ShortTermFuelTrimGauge.h"
-#include "SerialCarDevice.h"
+#include "CarDatasource.h"
 
 void Bank1ShortTermFuelTrimGauge::Update() {
     auto trim = serialCarDevice->GetShortTermFuelTrimBank1();

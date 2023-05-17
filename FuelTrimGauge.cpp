@@ -4,7 +4,7 @@
 
 #include "FuelTrimGauge.h"
 
-FuelTrimGauge::FuelTrimGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice) : serialCarDevice(serialCarDevice) {
+FuelTrimGauge::FuelTrimGauge(const std::shared_ptr<CarDatasource> &serialCarDevice) : serialCarDevice(serialCarDevice) {
     min = -100;
     max = 100;
     markOffset = -100;

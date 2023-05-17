@@ -9,7 +9,7 @@
 
 class ShortTermFuelTrimGauge : public FuelTrimGauge {
 public:
-    ShortTermFuelTrimGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice) :
+    ShortTermFuelTrimGauge(const std::shared_ptr<CarDatasource> &serialCarDevice) :
             FuelTrimGauge(serialCarDevice) {}
     void Update() override = 0;
     PriorityCategory GetPriorityCategory() const override;

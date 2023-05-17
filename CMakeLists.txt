@@ -19,7 +19,8 @@ add_executable(elmobddisplay elmobddisplay.cpp X11Display.cpp X11Display.h X11Wi
         Bank2ShortTermFuelTrimGauge.cpp Bank2ShortTermFuelTrimGauge.h
         LongTermFuelTrimGauge.cpp LongTermFuelTrimGauge.h
         Bank1LongTermFuelTrimGauge.cpp Bank1LongTermFuelTrimGauge.h
-        Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h)
+        Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h
+        CarDatasource.h ElmObdDisplay.cpp ElmObdDisplay.h)
 target_link_libraries(elmobddisplay PRIVATE elmobdobj)
 
 target_link_libraries(elmobddisplay PRIVATE -lX11)

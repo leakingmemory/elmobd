@@ -3,9 +3,9 @@
 //
 
 #include "IntakeAirTempGauge.h"
-#include "SerialCarDevice.h"
+#include "CarDatasource.h"
 
-IntakeAirTempGauge::IntakeAirTempGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice) : serialCarDevice(serialCarDevice) {
+IntakeAirTempGauge::IntakeAirTempGauge(const std::shared_ptr<CarDatasource> &serialCarDevice) : serialCarDevice(serialCarDevice) {
     min = -40;
     max = 40;
     mark = 10;

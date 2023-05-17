@@ -9,7 +9,7 @@
 
 class Bank2ShortTermFuelTrimGauge : public ShortTermFuelTrimGauge {
 public:
-    Bank2ShortTermFuelTrimGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice) : ShortTermFuelTrimGauge(serialCarDevice) {}
+    Bank2ShortTermFuelTrimGauge(const std::shared_ptr<CarDatasource> &serialCarDevice) : ShortTermFuelTrimGauge(serialCarDevice) {}
     void Update() override;
 };
 

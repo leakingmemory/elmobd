@@ -3,9 +3,9 @@
 //
 
 #include "MassFlowGauge.h"
-#include "SerialCarDevice.h"
+#include "CarDatasource.h"
 
-MassFlowGauge::MassFlowGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice)  : serialCarDevice(serialCarDevice) {
+MassFlowGauge::MassFlowGauge(const std::shared_ptr<CarDatasource> &serialCarDevice)  : serialCarDevice(serialCarDevice) {
     min = 0;
     max = 100;
 }

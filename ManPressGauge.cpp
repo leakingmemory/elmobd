@@ -3,9 +3,9 @@
 //
 
 #include "ManPressGauge.h"
-#include "SerialCarDevice.h"
+#include "CarDatasource.h"
 
-ManPressGauge::ManPressGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice)  : serialCarDevice(serialCarDevice) {
+ManPressGauge::ManPressGauge(const std::shared_ptr<CarDatasource> &serialCarDevice)  : serialCarDevice(serialCarDevice) {
     min = 20.0f;
     max = 110.0f;
 }

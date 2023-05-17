@@ -8,13 +8,13 @@
 #include "AnalogGauge.h"
 #include "Meter.h"
 
-class SerialCarDevice;
+class CarDatasource;
 
 class IntakeAirTempGauge : public AnalogGauge, public Meter {
 private:
-    std::shared_ptr<SerialCarDevice> serialCarDevice;
+    std::shared_ptr<CarDatasource> serialCarDevice;
 public:
-    IntakeAirTempGauge(const std::shared_ptr<SerialCarDevice> &serialCarDevice);
+    IntakeAirTempGauge(const std::shared_ptr<CarDatasource> &serialCarDevice);
     void Update() override;
     PriorityCategory GetPriorityCategory() const override;
 };
