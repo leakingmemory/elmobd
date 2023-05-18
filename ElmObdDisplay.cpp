@@ -14,6 +14,7 @@
 #include "Bank2ShortTermFuelTrimGauge.h"
 #include "Bank1LongTermFuelTrimGauge.h"
 #include "Bank2LongTermFuelTrimGauge.h"
+#include "O2Gauge.h"
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -70,6 +71,15 @@ void ElmObdDisplay::Run() const {
                 meters.emplace_back(gauge);
             }
             x += 110;
+        }
+        x = 0;
+        for (int sensor = 0; sensor < 8; sensor++) {
+            if (carDatasource->HasO2Sensor(sensor)) {
+                auto gauge = std::make_shared<O2Gauge>(carDatasource, sensor);
+                window->Add(gauge, x, 200, 50, 100);
+                meters.emplace_back(gauge);
+                x += 55;
+            }
         }
     }
     using namespace std::chrono_literals;

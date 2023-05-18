@@ -58,7 +58,7 @@ public:
         return false;
     }
     virtual bool HasO2Sensor(int n) const {
-        return false;
+        return n == 0 || n == 1 || n == 4 || n == 5;
     }
     virtual OBDStatus GetStatus() const {
         return {};
@@ -136,7 +136,21 @@ public:
         return 0;
     }
     virtual O2Sensor GetO2Sensor(int n) const {
-        return {};
+        O2Sensor s{};
+        {
+            float r = (float) rand();
+            r /= RAND_MAX;
+            r *= 1.25;
+            s.Voltage = r;
+        }
+        {
+            float r = (float) rand();
+            r /= RAND_MAX;
+            r *= 200;
+            r -= 100;
+            s.ShortTermFuelTrim = (int) r;
+        }
+        return s;
     }
     virtual bool HasVIN() const {
         return false;
