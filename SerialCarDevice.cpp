@@ -302,7 +302,7 @@ int SerialCarDevice::GetShortTermFuelTrimBank1() const {
     }
     int trim = (int) PayloadInt(msg);
     trim *= 100;
-    trim /= 255;
+    trim /= 128;
     trim -= 100;
     return trim;
 }
@@ -320,7 +320,7 @@ int SerialCarDevice::GetLongTermFuelTrimBank1() const {
     }
     int trim = (int) PayloadInt(msg);
     trim *= 100;
-    trim /= 255;
+    trim /= 128;
     trim -= 100;
     return trim;
 }
@@ -338,7 +338,7 @@ int SerialCarDevice::GetShortTermFuelTrimBank2() const {
     }
     int trim = (int) PayloadInt(msg);
     trim *= 100;
-    trim /= 255;
+    trim /= 128;
     trim -= 100;
     return trim;
 }
@@ -356,7 +356,7 @@ int SerialCarDevice::GetLongTermFuelTrimBank2() const {
     }
     int trim = (int) PayloadInt(msg);
     trim *= 100;
-    trim /= 255;
+    trim /= 128;
     trim -= 100;
     return trim;
 }
