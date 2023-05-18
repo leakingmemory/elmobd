@@ -19,9 +19,9 @@ add_library(elmobddisplayobj OBJECT X11Display.cpp X11Display.h X11Window.cpp X1
         Bank2ShortTermFuelTrimGauge.cpp Bank2ShortTermFuelTrimGauge.h
         LongTermFuelTrimGauge.cpp LongTermFuelTrimGauge.h
         Bank1LongTermFuelTrimGauge.cpp Bank1LongTermFuelTrimGauge.h
-        Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h
-        ElmObdDisplay.cpp ElmObdDisplay.h O2FuelTrimGauge.cpp O2FuelTrimGauge.h
-        O2VoltageGauge.cpp O2VoltageGauge.h O2Gauge.cpp O2Gauge.h)
+        Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h  ElmObdDisplay.cpp ElmObdDisplay.h
+        O2FuelTrimGauge.cpp O2FuelTrimGauge.h  O2VoltageGauge.cpp O2VoltageGauge.h O2Gauge.cpp O2Gauge.h
+        EngCoolantTempGauge.cpp EngCoolantTempGauge.h)
 
 add_executable(elmobddisplay elmobddisplay.cpp)
 target_link_libraries(elmobddisplay PRIVATE elmobdobj)

@@ -19,7 +19,7 @@ public:
         return false;
     }
     virtual bool HasCoolantTemperature() const {
-        return false;
+        return true;
     }
     virtual bool HasShortTermFuelTrimBank1() const {
         return true;
@@ -70,7 +70,11 @@ public:
         return 0;
     }
     virtual int GetCoolantTemperature() const {
-        return 0;
+        float r = (float) rand();
+        r /= RAND_MAX;
+        r *= 150;
+        r -= 40;
+        return (int) r;
     }
     virtual int GetShortTermFuelTrimBank1() const {
         float r = (float) rand();

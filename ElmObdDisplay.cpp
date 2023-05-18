@@ -15,6 +15,7 @@
 #include "Bank1LongTermFuelTrimGauge.h"
 #include "Bank2LongTermFuelTrimGauge.h"
 #include "O2Gauge.h"
+#include "EngCoolantTempGauge.h"
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -80,6 +81,12 @@ void ElmObdDisplay::Run() const {
                 meters.emplace_back(gauge);
                 x += 55;
             }
+        }
+        if (carDatasource->HasCoolantTemperature()) {
+            auto gauge = std::make_shared<EngCoolantTempGauge>(carDatasource);
+            window->Add(gauge, x, 200, 100, 100);
+            meters.emplace_back(gauge);
+            x += 110;
         }
     }
     using namespace std::chrono_literals;
