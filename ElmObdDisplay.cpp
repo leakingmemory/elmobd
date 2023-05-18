@@ -30,13 +30,13 @@ void ElmObdDisplay::Run() const {
         if (carDatasource->HasIntakeManifoldAbsPressure()) {
             auto gauge = std::make_shared<ManPressGauge>(carDatasource);
             window->Add(gauge, x, 0, 200, 200);
-            x += 200;
+            x += 220;
             meters.emplace_back(gauge);
         }
         if (carDatasource->HasMassAirFlow()) {
             auto gauge = std::make_shared<MassFlowGauge>(carDatasource);
             window->Add(gauge, x, 0, 200, 200);
-            x += 200;
+            x += 220;
             meters.emplace_back(gauge);
         }
         if (carDatasource->HasIntakeAirTemperature() ||
@@ -56,7 +56,7 @@ void ElmObdDisplay::Run() const {
             }
             if (carDatasource->HasShortTermFuelTrimBank2()) {
                 auto gauge = std::make_shared<Bank2ShortTermFuelTrimGauge>(carDatasource);
-                window->Add(gauge, x + 50, 100, 50, 50);
+                window->Add(gauge, x + 55, 100, 50, 50);
                 meters.emplace_back(gauge);
             }
             if (carDatasource->HasLongTermFuelTrimBank1()) {
@@ -66,10 +66,10 @@ void ElmObdDisplay::Run() const {
             }
             if (carDatasource->HasLongTermFuelTrimBank2()) {
                 auto gauge = std::make_shared<Bank2LongTermFuelTrimGauge>(carDatasource);
-                window->Add(gauge, x + 50, 150, 50, 50);
+                window->Add(gauge, x + 55, 150, 50, 50);
                 meters.emplace_back(gauge);
             }
-            x += 100;
+            x += 110;
         }
     }
     using namespace std::chrono_literals;

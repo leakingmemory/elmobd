@@ -8,6 +8,7 @@
 #include "X11WindowImpl.h"
 #include <math.h>
 #include <X11/Xlib.h>
+#include <sstream>
 
 void AnalogGauge::Init(std::shared_ptr<X11Window> window) {
     this->window = std::weak_ptr<X11Window>(window);
@@ -74,25 +75,46 @@ void AnalogGauge::DrawBackground(int x, int y, int width, int height) {
     auto *display = windowSh->display->Impl().display;
     auto &window = windowSh->Impl().window;
     auto &gc = this->gc->Impl().gc;
+    auto *font = XQueryFont(display, XGContextFromGC(gc));
     for (int i = markOffset; i <= max; i += mark) {
         float k = (((float) i) - ((float) min)) / span;
         float rad = (k * radSpan) + radMin;
         float x1 = cos(rad) * needle;
         float x2 = cos(rad) * (needle - markLength);
+        float x3 = cos(rad) * (needle - (markLength * 1.5f) - 10.0f);
         float y1 = sin(rad) * needle;
         float y2 = sin(rad) * (needle - markLength);
+        float y3 = sin(rad) * (needle - (markLength * 1.5f) - 10.0f);
         x1 += centerX + x;
         x2 += centerX + x;
+        x3 += centerX + x;
         y1 += centerY + y;
         y2 += centerY + y;
+        y3 += centerY + y;
         XDrawLine(display, window, gc, x1, y1, x2, y2);
+        if (((i - markOffset) % showValueMark) == 0) {
+            std::string str{};
+            {
+                std::stringstream strs{};
+                strs << i;
+                str = strs.str();
+            }
+            auto strw = XTextWidth(font, str.c_str(), str.size());
+            x3 -= strw / 2;
+            XTextItem textItem{
+                    .chars = (char *) str.c_str(),
+                    .nchars = (int) str.size(),
+                    .delta = 0,
+                    .font = None
+            };
+            XDrawText(display, window, gc, (int) x3, (int) y3, &textItem, 1);
+        }
     }
     if (!caption.empty()) {
         float tx = captionX * width;
         float ty = captionY * height;
         tx += x;
         ty += y;
-        auto *font = XQueryFont(display, XGContextFromGC(gc));
         auto tw = XTextWidth(font, caption.c_str(), caption.size());
         tx -= tw / 2;
         XTextItem textItem{

@@ -21,6 +21,7 @@ protected:
     float min{0.0f};
     int markOffset{0};
     int mark{10};
+    int showValueMark{20};
     int degMin{237};
     int degMax{303};
     float centerX{0.5f};
