@@ -11,12 +11,14 @@
 class X11GCImpl;
 class AnalogGauge;
 class X11Window;
+class WarningsPanel;
 
 class X11DisplayImpl : public X11Display {
     friend X11WindowImpl;
     friend X11Window;
     friend X11GCImpl;
     friend AnalogGauge;
+    friend WarningsPanel;
 private:
     Display *display;
 public:

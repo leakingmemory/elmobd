@@ -12,10 +12,12 @@
 class X11Display;
 class X11GCImpl;
 class AnalogGauge;
+class WarningsPanel;
 
 class X11WindowImpl : public X11Window, public std::enable_shared_from_this<X11WindowImpl> {
     friend X11GCImpl;
     friend AnalogGauge;
+    friend WarningsPanel;
 private:
     Window window;
 public:

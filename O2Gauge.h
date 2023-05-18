@@ -21,6 +21,7 @@ private:
 public:
     O2Gauge(const std::shared_ptr<CarDatasource> &carDatasource, int sensor);
     void Init(std::shared_ptr<X11Window> window) override;
+    bool HasPendingMutation() override;
     void Mutate() override;
     void DrawBackground(int x, int y, int width, int height) override;
     void BlankForeground(int x, int y, int width, int height) override;

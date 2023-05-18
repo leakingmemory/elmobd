@@ -13,6 +13,7 @@ class X11WindowImpl;
 class Widget;
 class X11GCImpl;
 class AnalogGauge;
+class WarningsPanel;
 
 struct WindowWidget {
     int x, y, width, height;
@@ -23,6 +24,7 @@ class X11Window {
     friend X11WindowImpl;
     friend X11GCImpl;
     friend AnalogGauge;
+    friend WarningsPanel;
 private:
     std::shared_ptr<X11Display> display;
     std::vector<WindowWidget> widgets;

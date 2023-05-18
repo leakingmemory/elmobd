@@ -22,9 +22,19 @@ void AnalogGauge::SetCurrentValue(float value) {
     currentValue = value;
 }
 
+static float NeedleValue(float currentValue, float needleValue) {
+    return ((currentValue * 2.0f) + needleValue) / 3.0f;
+}
+
+bool AnalogGauge::HasPendingMutation() {
+    std::lock_guard lock{currentValueMtx};
+    bool pending = abs(NeedleValue(currentValue, needleValue) - needleValue) > 0.001;
+    return pending;
+}
+
 void AnalogGauge::Mutate() {
     std::lock_guard lock{currentValueMtx};
-    needleValue = ((currentValue * 2.0f) + needleValue) / 3.0f;
+    needleValue = NeedleValue(currentValue, needleValue);
 }
 
 void AnalogGauge::DrawNeedle(const std::shared_ptr<X11GC> &usingGc, float value, int x, int y, int width, int height) {

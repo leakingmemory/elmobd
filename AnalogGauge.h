@@ -38,6 +38,7 @@ public:
     void Init(std::shared_ptr<X11Window> window) override;
     void DrawNeedle(const std::shared_ptr<X11GC> &usingGc, float value, int x, int y, int width, int height);
     void SetCurrentValue(float value);
+    bool HasPendingMutation() override;
     void Mutate() override;
     void DrawBackground(int x, int y, int width, int height) override;
     void BlankForeground(int x, int y, int width, int height) override;

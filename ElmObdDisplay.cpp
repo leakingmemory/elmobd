@@ -16,6 +16,7 @@
 #include "Bank2LongTermFuelTrimGauge.h"
 #include "O2Gauge.h"
 #include "EngCoolantTempGauge.h"
+#include "WarningsPanel.h"
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -27,7 +28,9 @@ void ElmObdDisplay::Run() const {
     auto height = display->GetScreenHeight(screen);
     auto window = X11Window::Create(display, screen, width, height, 0, 0);
     std::vector<std::shared_ptr<Meter>> meters{};
+    std::shared_ptr<WarningsData> warningsData = std::make_shared<WarningsData>();
     {
+        int maxX = 0;
         int x = 0;
         if (carDatasource->HasIntakeManifoldAbsPressure()) {
             auto gauge = std::make_shared<ManPressGauge>(carDatasource);
@@ -62,16 +65,19 @@ void ElmObdDisplay::Run() const {
                 meters.emplace_back(gauge);
             }
             if (carDatasource->HasLongTermFuelTrimBank1()) {
-                auto gauge = std::make_shared<Bank1LongTermFuelTrimGauge>(carDatasource);
+                auto gauge = std::make_shared<Bank1LongTermFuelTrimGauge>(carDatasource, warningsData);
                 window->Add(gauge, x, 150, 50, 50);
                 meters.emplace_back(gauge);
             }
             if (carDatasource->HasLongTermFuelTrimBank2()) {
-                auto gauge = std::make_shared<Bank2LongTermFuelTrimGauge>(carDatasource);
+                auto gauge = std::make_shared<Bank2LongTermFuelTrimGauge>(carDatasource, warningsData);
                 window->Add(gauge, x + 55, 150, 50, 50);
                 meters.emplace_back(gauge);
             }
             x += 110;
+        }
+        if (x > maxX) {
+            maxX = x;
         }
         x = 0;
         for (int sensor = 0; sensor < 8; sensor++) {
@@ -87,6 +93,14 @@ void ElmObdDisplay::Run() const {
             window->Add(gauge, x, 200, 100, 100);
             meters.emplace_back(gauge);
             x += 110;
+        }
+        if (x < maxX) {
+            x = maxX;
+        }
+        {
+            auto gauge = std::make_shared<WarningsPanel>(warningsData);
+            window->Add(gauge, x, 0, 200, 300);
+            meters.emplace_back(gauge);
         }
     }
     using namespace std::chrono_literals;

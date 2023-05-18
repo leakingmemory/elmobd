@@ -13,6 +13,10 @@ void O2Gauge::Init(std::shared_ptr<X11Window> window) {
     fuelTrimGauge.Init(window);
 }
 
+bool O2Gauge::HasPendingMutation() {
+    return voltageGauge.HasPendingMutation() || fuelTrimGauge.HasPendingMutation();
+}
+
 void O2Gauge::Mutate() {
     voltageGauge.Mutate();
     fuelTrimGauge.Mutate();

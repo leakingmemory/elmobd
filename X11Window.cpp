@@ -19,6 +19,9 @@ void X11Window::Add(const std::shared_ptr<Widget> &widget, int x, int y, int wid
 
 void X11Window::RenderingCycle() {
     for (const auto &widget : widgets) {
+        if (!widget.widget->HasPendingMutation()) {
+            continue;
+        }
         widget.widget->BlankForeground(widget.x, widget.y, widget.width, widget.height);
         widget.widget->Mutate();
         widget.widget->DrawForeground(widget.x, widget.y, widget.width, widget.height);

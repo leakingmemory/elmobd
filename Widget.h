@@ -13,6 +13,7 @@ class X11Window;
 class Widget {
 public:
     virtual void Init(std::shared_ptr<X11Window> window) = 0;
+    virtual bool HasPendingMutation() = 0;
     virtual void Mutate() = 0;
     virtual void DrawBackground(int x, int y, int width, int height) = 0;
     virtual void BlankForeground(int x, int y, int width, int height) = 0;
