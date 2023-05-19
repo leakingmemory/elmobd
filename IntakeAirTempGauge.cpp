@@ -4,8 +4,9 @@
 
 #include "IntakeAirTempGauge.h"
 #include "CarDatasource.h"
+#include "WarningsData.h"
 
-IntakeAirTempGauge::IntakeAirTempGauge(const std::shared_ptr<CarDatasource> &serialCarDevice) : serialCarDevice(serialCarDevice) {
+IntakeAirTempGauge::IntakeAirTempGauge(const std::shared_ptr<CarDatasource> &serialCarDevice, const std::shared_ptr<WarningsData> &warningsData) : serialCarDevice(serialCarDevice), warningsData(warningsData), warningsList(warningsData->Create())  {
     min = -40;
     max = 40;
     mark = 10;
@@ -13,9 +14,19 @@ IntakeAirTempGauge::IntakeAirTempGauge(const std::shared_ptr<CarDatasource> &ser
     caption = "IAT (Celsius)";
 }
 
+IntakeAirTempGauge::~IntakeAirTempGauge() {
+    warningsData->Remove(warningsList);
+}
+
 void IntakeAirTempGauge::Update() {
     auto temp = serialCarDevice->GetIntakeAirTemperature();
     SetCurrentValue(temp);
+    std::vector<std::string> messages{};
+    if (temp > -2 && temp < 2) {
+        messages.emplace_back("ICING COND");
+    }
+    std::lock_guard lock{warningsList->mtx};
+    warningsList->messages = messages;
 }
 
 PriorityCategory IntakeAirTempGauge::GetPriorityCategory() const {

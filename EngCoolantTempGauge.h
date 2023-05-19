@@ -7,14 +7,20 @@
 
 #include "AnalogGauge.h"
 #include "Meter.h"
+#include <memory>
 
 class CarDatasource;
+class WarningsData;
+class WarningsList;
 
 class EngCoolantTempGauge : public AnalogGauge, public Meter {
 private:
     std::shared_ptr<CarDatasource> serialCarDevice;
+    std::shared_ptr<WarningsData> warningsData;
+    std::shared_ptr<WarningsList> warningsList;
 public:
-    EngCoolantTempGauge(const std::shared_ptr<CarDatasource> &serialCarDevice);
+    EngCoolantTempGauge(const std::shared_ptr<CarDatasource> &serialCarDevice, const std::shared_ptr<WarningsData> &warningsData);
+    ~EngCoolantTempGauge();
     void Update() override;
     PriorityCategory GetPriorityCategory() const override;
 };

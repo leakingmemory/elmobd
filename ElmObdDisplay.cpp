@@ -50,7 +50,7 @@ void ElmObdDisplay::Run() const {
             carDatasource->HasLongTermFuelTrimBank1() ||
             carDatasource->HasLongTermFuelTrimBank2()) {
             if (carDatasource->HasIntakeAirTemperature()) {
-                auto gauge = std::make_shared<IntakeAirTempGauge>(carDatasource);
+                auto gauge = std::make_shared<IntakeAirTempGauge>(carDatasource, warningsData);
                 window->Add(gauge, x, 0, 100, 100);
                 meters.emplace_back(gauge);
             }
@@ -89,7 +89,7 @@ void ElmObdDisplay::Run() const {
             }
         }
         if (carDatasource->HasCoolantTemperature()) {
-            auto gauge = std::make_shared<EngCoolantTempGauge>(carDatasource);
+            auto gauge = std::make_shared<EngCoolantTempGauge>(carDatasource, warningsData);
             window->Add(gauge, x, 200, 100, 100);
             meters.emplace_back(gauge);
             x += 110;
