@@ -27,6 +27,7 @@ protected:
     uint32_t pid9s{0};
 public:
     SerialCanDevice(SerialInterface &&mv, const std::string &protocol = "");
+    void Disconnect();
     void SetProtocol(const std::string &protocol);
     void DetectProtocol();
     ~SerialCanDevice();

@@ -73,6 +73,7 @@ struct O2Sensor {
 
 class CarDatasource {
 public:
+    virtual void Disconnect() = 0;
     virtual bool HasStatus() const = 0;
     virtual bool HasFuelSystemStatus() const = 0;
     virtual bool HasCalculatedLoad() const = 0;

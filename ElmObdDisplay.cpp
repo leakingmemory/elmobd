@@ -28,7 +28,6 @@ void ElmObdDisplay::Run() const {
     auto height = display->GetScreenHeight(screen);
     auto window = X11Window::Create(display, screen, width, height, 0, 0);
     std::vector<std::shared_ptr<Meter>> meters{};
-    std::shared_ptr<WarningsData> warningsData = std::make_shared<WarningsData>();
     {
         int maxX = 0;
         int x = 0;

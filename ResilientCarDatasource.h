@@ -1,19 +1,41 @@
 //
-// Created by sigsegv on 5/13/23.
+// Created by sigsegv on 5/19/23.
 //
 
-#ifndef ELMOBD_SERIALCARDEVICE_H
-#define ELMOBD_SERIALCARDEVICE_H
+#ifndef ELMOBD_RESILIENTCARDATASOURCE_H
+#define ELMOBD_RESILIENTCARDATASOURCE_H
 
-#include "SerialCanDevice.h"
 #include "CarDatasource.h"
+#include <memory>
+#include <mutex>
 
-class SerialCarDevice : public SerialCanDevice, public CarDatasource {
-public:
-    SerialCarDevice(SerialInterface &&mv, const std::string &protocol = "");
+class WarningsData;
+class WarningsList;
+
+struct ResilientConnectionData {
+    std::shared_ptr<CarDatasource> carDatasource{};
+    std::shared_ptr<CarDatasource> capsCarDatasource{};
+    std::shared_ptr<WarningsData> warningsData;
+    std::shared_ptr<WarningsList> warningsList;
+    bool connecting{false};
+
+    ResilientConnectionData(const std::shared_ptr<WarningsData> &warningsData);
+    ~ResilientConnectionData();
+};
+
+class ResilientCarDatasource : public CarDatasource, public std::enable_shared_from_this<ResilientCarDatasource> {
 private:
+    std::unique_ptr<std::mutex> mtx;
+    std::unique_ptr<ResilientConnectionData> c;
 public:
-    void Disconnect() override;
+    ResilientCarDatasource(const std::shared_ptr<WarningsData> &warningsData);
+private:
+    virtual std::shared_ptr<CarDatasource> DoConnect() const = 0;
+    void Connect() const;
+protected:
+    void Init();
+public:
+    void Disconnect();
     bool HasStatus() const override;
     bool HasFuelSystemStatus() const override;
     bool HasCalculatedLoad() const override;
@@ -52,5 +74,12 @@ public:
     std::string GetVIN() const override;
 };
 
+class ResilientOBDCarDatasource : public ResilientCarDatasource {
+private:
+    std::string protocol{};
+public:
+    ResilientOBDCarDatasource(const std::shared_ptr<WarningsData> &warningsData);
+    std::shared_ptr<CarDatasource> DoConnect() const override;
+};
 
-#endif //ELMOBD_SERIALCARDEVICE_H
+#endif //ELMOBD_RESILIENTCARDATASOURCE_H

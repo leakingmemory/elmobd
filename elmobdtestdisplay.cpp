@@ -4,11 +4,23 @@
 
 #include "ElmObdDisplay.h"
 #include "CarDatasource.h"
+#include "ResilientCarDatasource.h"
+#include "WarningsData.h"
 #include <cstdlib>
 #include <memory>
 
+static void RandomException() {
+    float r = (float) rand();
+    r /= RAND_MAX;
+    if (r < 0.05) {
+        throw std::exception();
+    }
+}
+
 class TestDatasource : public CarDatasource {
 public:
+    void Disconnect() override {
+    }
     virtual bool HasStatus() const {
         return false;
     }
@@ -70,6 +82,7 @@ public:
         return 0;
     }
     virtual int GetCoolantTemperature() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 150;
@@ -77,6 +90,7 @@ public:
         return (int) r;
     }
     virtual int GetShortTermFuelTrimBank1() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 200;
@@ -84,6 +98,7 @@ public:
         return (int) r;
     }
     virtual int GetLongTermFuelTrimBank1() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 200;
@@ -91,6 +106,7 @@ public:
         return (int) r;
     }
     virtual int GetShortTermFuelTrimBank2() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 200;
@@ -98,6 +114,7 @@ public:
         return (int) r;
     }
     virtual int GetLongTermFuelTrimBank2() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 200;
@@ -108,6 +125,7 @@ public:
         return 0;
     }
     virtual int GetIntakeManifoldAbsPressure() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 92;
@@ -124,6 +142,7 @@ public:
         return 0;
     }
     virtual int GetIntakeAirTemperature() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 80;
@@ -131,6 +150,7 @@ public:
         return (int) r;
     }
     virtual float GetMassAirFlow() const {
+        RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 120;
@@ -140,6 +160,7 @@ public:
         return 0;
     }
     virtual O2Sensor GetO2Sensor(int n) const {
+        RandomException();
         O2Sensor s{};
         {
             float r = (float) rand();
@@ -164,8 +185,19 @@ public:
     }
 };
 
+class ResilientTestCarDatasource : public ResilientCarDatasource {
+public:
+    ResilientTestCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : ResilientCarDatasource(warningsData) {
+        Init();
+    }
+    std::shared_ptr<CarDatasource> DoConnect() const override {
+        return std::make_shared<TestDatasource>();
+    }
+};
+
 int main() {
-    auto testSource = std::make_shared<TestDatasource>();
-    ElmObdDisplay elmObdDisplay{testSource};
+    auto warningsData = std::make_shared<WarningsData>();
+    auto testSource = std::make_shared<ResilientTestCarDatasource>(warningsData);
+    ElmObdDisplay elmObdDisplay{testSource, warningsData};
     elmObdDisplay.Run();
 }

@@ -4,7 +4,8 @@ project(elmobd)
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(elmobdobj OBJECT SerialInterface.cpp SerialInterface.h SerialCanDevice.cpp SerialCanDevice.h
-        SerialCarDevice.cpp SerialCarDevice.h SerialCarDevice.cpp SerialCarDevice.h CarDatasource.h)
+        SerialCarDevice.cpp SerialCarDevice.h SerialCarDevice.cpp SerialCarDevice.h CarDatasource.h
+        WarningsData.cpp WarningsData.h ResilientCarDatasource.cpp ResilientCarDatasource.h)
 
 add_executable(elmobd main.cpp)
 target_link_libraries(elmobd PRIVATE elmobdobj)
@@ -21,8 +22,7 @@ add_library(elmobddisplayobj OBJECT X11Display.cpp X11Display.h X11Window.cpp X1
         Bank1LongTermFuelTrimGauge.cpp Bank1LongTermFuelTrimGauge.h
         Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h  ElmObdDisplay.cpp ElmObdDisplay.h
         O2FuelTrimGauge.cpp O2FuelTrimGauge.h  O2VoltageGauge.cpp O2VoltageGauge.h O2Gauge.cpp O2Gauge.h
-        EngCoolantTempGauge.cpp EngCoolantTempGauge.h WarningsPanel.cpp WarningsPanel.h
-        WarningsData.cpp WarningsData.h)
+        EngCoolantTempGauge.cpp EngCoolantTempGauge.h WarningsPanel.cpp WarningsPanel.h)
 
 add_executable(elmobddisplay elmobddisplay.cpp)
 target_link_libraries(elmobddisplay PRIVATE elmobdobj)

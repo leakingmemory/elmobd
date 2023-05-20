@@ -2,24 +2,15 @@
 // Created by sigsegv on 5/16/23.
 //
 
-#include "SerialInterface.h"
-#include "SerialCarDevice.h"
+#include "ResilientCarDatasource.h"
 #include "ElmObdDisplay.h"
+#include "WarningsData.h"
 #include <memory>
 
 int main() {
-    std::string protocol{};
-    {
-        const char *envproto = getenv("PROTOCOL");
-        if (envproto != nullptr) {
-            protocol = envproto;
-        }
-    }
-    SerialInterface serialInterface{"/dev/ttyUSB0"};
-    serialInterface.SetSpeed(SerialSpeed::S38400);
-    serialInterface.CommitAttributes();
-    std::shared_ptr<SerialCarDevice> serialCarDevice = std::make_shared<SerialCarDevice>(std::move(serialInterface), protocol);
+    std::shared_ptr<WarningsData> warningsData = std::make_shared<WarningsData>();
+    std::shared_ptr<CarDatasource> resilientCarDatasource = std::make_shared<ResilientOBDCarDatasource>(warningsData);
 
-    ElmObdDisplay elmObdDisplay{serialCarDevice};
+    ElmObdDisplay elmObdDisplay{resilientCarDatasource, warningsData};
     elmObdDisplay.Run();
 }

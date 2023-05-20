@@ -19,6 +19,10 @@ public:
 SerialCarDevice::SerialCarDevice(SerialInterface &&mv, const std::string &protocol) : SerialCanDevice(std::move(mv), protocol) {
 }
 
+void SerialCarDevice::Disconnect() {
+    SerialCanDevice::Disconnect();
+}
+
 bool SerialCarDevice::HasStatus() const {
     if ((pidsA & 0x80000000) != 0) {
         return true;

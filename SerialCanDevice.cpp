@@ -79,6 +79,10 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv, const std::string &protoc
     std::cout << "Found PID9s " << std::hex << pid9s << std::dec << "\n";
 }
 
+void SerialCanDevice::Disconnect() {
+    serialInterface = {};
+}
+
 void SerialCanDevice::SetProtocol(const std::string &protocol) {
     if (protocol.size() == 1) {
         if (!TrySetProtocol(protocol)) {
