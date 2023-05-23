@@ -578,3 +578,9 @@ std::string SerialCarDevice::GetVIN() const {
     }
     return vin;
 }
+
+void SerialCarDevice::ClearDTCEtc() const {
+    serialInterface->Write("04\r");
+    std::string buf{};
+    WaitForPrompt(buf , 5000);
+}

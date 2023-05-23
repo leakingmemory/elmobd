@@ -10,6 +10,9 @@ add_library(elmobdobj OBJECT SerialInterface.cpp SerialInterface.h SerialCanDevi
 add_executable(elmobd main.cpp)
 target_link_libraries(elmobd PRIVATE elmobdobj)
 
+add_executable(cleardtc clearecu.cpp)
+target_link_libraries(cleardtc PRIVATE elmobdobj)
+
 add_library(elmobddisplayobj OBJECT X11Display.cpp X11Display.h X11Window.cpp X11Window.h
         X11DisplayImpl.cpp X11DisplayImpl.h Widget.h AnalogGauge.cpp AnalogGauge.h X11GC.cpp X11GC.h
         X11GCImpl.cpp X11GCImpl.h X11WindowImpl.cpp X11WindowImpl.h Meter.h
