@@ -35,3 +35,7 @@ int X11DisplayImpl::GetScreenWidth(int screenNum) const {
 int X11DisplayImpl::GetScreenHeight(int screenNum) const {
     return DisplayHeight(display, screenNum);
 }
+
+void X11DisplayImpl::ResetScreenSaver() const {
+    XResetScreenSaver(display);
+}

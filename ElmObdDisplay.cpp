@@ -20,6 +20,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <X11/Xlib.h>
 
 void ElmObdDisplay::Run() const {
     auto display = X11Display::Create();
@@ -150,6 +151,9 @@ void ElmObdDisplay::Run() const {
                 ++lowiter;
             }
             if ((++counter % 10) == 0) {
+                if ((++counter % 100) == 0) {
+                    display->ResetScreenSaver();
+                }
                 if (vlowiter == vlowpri.end()) {
                     vlowiter = vlowpri.begin();
                 }

@@ -28,6 +28,7 @@ public:
     int GetDefaultScreen() const override;
     int GetScreenWidth(int screenNum) const override;
     int GetScreenHeight(int screenNum) const override;
+    void ResetScreenSaver() const override;
 };
 
 

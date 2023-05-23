@@ -24,6 +24,7 @@ public:
     virtual int GetDefaultScreen() const = 0;
     virtual int GetScreenWidth(int screenNum) const = 0;
     virtual int GetScreenHeight(int screenNum) const = 0;
+    virtual void ResetScreenSaver() const = 0;
 };
 
 
