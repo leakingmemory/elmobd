@@ -35,6 +35,7 @@ public:
     SerialInterface(const SerialInterface &cp) = delete;
     SerialInterface &operator =(SerialInterface &&mv);
     SerialInterface &operator =(const SerialInterface &cp) = delete;
+    void Close();
     void SetOutputSpeed(SerialSpeed speed);
     void SetInputSpeed(SerialSpeed speed);
     void SetSpeed(SerialSpeed speed) {

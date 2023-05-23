@@ -5,6 +5,7 @@
 #include "SerialInterface.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <iostream>
 
 SerialInterface::SerialInterface(const char *dev) : fd(open(dev, O_RDWR | O_NOCTTY | O_SYNC)) {
     if (fd < 0) {
@@ -16,6 +17,7 @@ SerialInterface::SerialInterface(const char *dev) : fd(open(dev, O_RDWR | O_NOCT
 
 SerialInterface::~SerialInterface() {
     if (fd >= 0) {
+        std::cout << "Closing serial connection (d)\n";
         close(fd);
         fd = -1;
     }
@@ -24,12 +26,21 @@ SerialInterface::~SerialInterface() {
 SerialInterface &SerialInterface::operator=(SerialInterface &&mv) {
     if (&mv != this) {
         if (this->fd >= 0) {
+            std::cout << "Closing serial connection (mv)\n";
             close(this->fd);
         }
         this->fd = mv.fd;
         mv.fd = -1;
     }
     return *this;
+}
+
+void SerialInterface::Close() {
+    if (fd >= 0) {
+        std::cout << "Closing serial connection\n";
+        close(fd);
+        fd = -1;
+    }
 }
 
 typeof(B230400) GetSpeed(SerialSpeed speed) {

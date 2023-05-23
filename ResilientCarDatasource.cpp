@@ -29,7 +29,9 @@ void ResilientCarDatasource::Connect() const {
         c->connecting = true;
         auto prevDatasource = c->carDatasource;
         c->carDatasource = {};
-        prevDatasource->Disconnect();
+        if (prevDatasource) {
+            prevDatasource->Disconnect();
+        }
     }
     {
         std::vector<std::string> msg{};

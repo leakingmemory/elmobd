@@ -80,6 +80,7 @@ SerialCanDevice::SerialCanDevice(SerialInterface &&mv, const std::string &protoc
 }
 
 void SerialCanDevice::Disconnect() {
+    serialInterface->Close();
     serialInterface = {};
 }
 
