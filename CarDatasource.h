@@ -113,6 +113,7 @@ public:
     virtual std::string GetVIN() const = 0;
     virtual void ClearDTCEtc() = 0;
     virtual std::vector<std::string> GetDTCs() const = 0;
+    virtual std::vector<std::string> GetPendingDTCs() const = 0;
 };
 
 #endif //ELMOBD_CARDATASOURCE_H

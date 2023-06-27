@@ -105,7 +105,11 @@ void ElmObdDisplay::Run() const {
         }
     }
     {
-        auto dtcMeter = std::make_shared<DtcMonitor>(carDatasource, warningsData);
+        auto dtcMeter = std::make_shared<DtcStoredMonitor>(carDatasource, warningsData);
+        meters.emplace_back(dtcMeter);
+    }
+    {
+        auto dtcMeter = std::make_shared<DtcPendingMonitor>(carDatasource, warningsData);
         meters.emplace_back(dtcMeter);
     }
     using namespace std::chrono_literals;

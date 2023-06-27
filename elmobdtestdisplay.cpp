@@ -20,11 +20,13 @@ static void RandomException() {
 class TestDatasource : public CarDatasource {
 private:
     std::vector<std::string> errorCodes{};
+    std::vector<std::string> pendingCodes{};
 public:
     TestDatasource() {
         errorCodes.emplace_back("P171");
         errorCodes.emplace_back("P174");
         errorCodes.emplace_back("P332");
+        pendingCodes.emplace_back("P374");
     }
     void Disconnect() override {
     }
@@ -192,9 +194,13 @@ public:
     }
     virtual void ClearDTCEtc() {
         errorCodes.clear();
+        pendingCodes.clear();
     }
     virtual std::vector<std::string> GetDTCs() const {
         return errorCodes;
+    }
+    virtual std::vector<std::string> GetPendingDTCs() const {
+        return pendingCodes;
     }
 };
 

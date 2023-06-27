@@ -14,5 +14,8 @@ std::string DtcCodeMap::GetMsg(const std::string &code) {
     if (code == "P332") {
         return "KNOCK SENS CIRC (B2)";
     }
+    if (code == "P374") {
+        return "TIMING REF A LOST";
+    }
     return "";
 }

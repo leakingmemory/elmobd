@@ -74,6 +74,7 @@ public:
     std::string GetVIN() const override;
     void ClearDTCEtc() override;
     std::vector<std::string> GetDTCs() const override;
+    std::vector<std::string> GetPendingDTCs() const override;
 };
 
 class ResilientOBDCarDatasource : public ResilientCarDatasource {
