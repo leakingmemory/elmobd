@@ -204,13 +204,18 @@ public:
     }
 };
 
+std::shared_ptr<TestDatasource> datasource{};
+
 class ResilientTestCarDatasource : public ResilientCarDatasource {
 public:
     ResilientTestCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : ResilientCarDatasource(warningsData) {
         Init();
     }
     std::shared_ptr<CarDatasource> DoConnect() const override {
-        return std::make_shared<TestDatasource>();
+        if (!datasource) {
+            datasource = std::make_shared<TestDatasource>();
+        }
+        return datasource;
     }
 };
 

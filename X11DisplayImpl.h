@@ -12,6 +12,7 @@ class X11GCImpl;
 class AnalogGauge;
 class X11Window;
 class WarningsPanel;
+class ClearDtcButton;
 
 class X11DisplayImpl : public X11Display {
     friend X11WindowImpl;
@@ -19,6 +20,7 @@ class X11DisplayImpl : public X11Display {
     friend X11GCImpl;
     friend AnalogGauge;
     friend WarningsPanel;
+    friend ClearDtcButton;
 private:
     Display *display;
 public:

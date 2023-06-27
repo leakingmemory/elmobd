@@ -29,7 +29,7 @@ add_library(elmobddisplayobj OBJECT X11Display.cpp X11Display.h X11Window.cpp X1
         Bank2LongTermFuelTrimGauge.cpp Bank2LongTermFuelTrimGauge.h  ElmObdDisplay.cpp ElmObdDisplay.h
         O2FuelTrimGauge.cpp O2FuelTrimGauge.h  O2VoltageGauge.cpp O2VoltageGauge.h O2Gauge.cpp O2Gauge.h
         EngCoolantTempGauge.cpp EngCoolantTempGauge.h WarningsPanel.cpp WarningsPanel.h
-        DtcCodeMap.cpp DtcCodeMap.h DtcMonitor.cpp DtcMonitor.h)
+        DtcCodeMap.cpp DtcCodeMap.h DtcMonitor.cpp DtcMonitor.h ClearDtcButton.cpp ClearDtcButton.h)
 
 add_executable(elmobddisplay elmobddisplay.cpp)
 target_link_libraries(elmobddisplay PRIVATE elmobdobj)

@@ -18,12 +18,14 @@
 #include "EngCoolantTempGauge.h"
 #include "DtcMonitor.h"
 #include "WarningsPanel.h"
+#include "ClearDtcButton.h"
 #include <thread>
 #include <chrono>
 #include <iostream>
 #include <X11/Xlib.h>
 
 void ElmObdDisplay::Run() const {
+    std::mutex mtx{};
     auto display = X11Display::Create();
     auto screen = display->GetDefaultScreen();
     auto width = display->GetScreenWidth(screen);
@@ -105,6 +107,10 @@ void ElmObdDisplay::Run() const {
         }
     }
     {
+        auto gauge = std::make_shared<ClearDtcButton>(carDatasource, mtx);
+        window->Add(gauge, 0, 300, 100, 100);
+    }
+    {
         auto dtcMeter = std::make_shared<DtcStoredMonitor>(carDatasource, warningsData);
         meters.emplace_back(dtcMeter);
     }
@@ -153,12 +159,14 @@ void ElmObdDisplay::Run() const {
         int counter = 0;
         while (true) {
             for (auto &meter : highpri) {
+                std::lock_guard lock{mtx};
                 meter->Update();
             }
             if (lowiter == lowpri.end()) {
                 lowiter = lowpri.begin();
             }
             if (lowiter != lowpri.end()) {
+                std::lock_guard lock{mtx};
                 (*lowiter)->Update();
                 ++lowiter;
             }
@@ -170,6 +178,7 @@ void ElmObdDisplay::Run() const {
                     vlowiter = vlowpri.begin();
                 }
                 if (vlowiter != vlowpri.end()) {
+                    std::lock_guard lock{mtx};
                     (*vlowiter)->Update();
                     ++vlowiter;
                 }

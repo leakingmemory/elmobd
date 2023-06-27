@@ -13,10 +13,12 @@ class X11Display;
 class X11Window;
 class AnalogGauge;
 class WarningsPanel;
+class ClearDtcButton;
 
 class X11GCImpl : public X11GC {
     friend AnalogGauge;
     friend WarningsPanel;
+    friend ClearDtcButton;
 private:
     std::shared_ptr<X11Display> display;
     GC gc;
