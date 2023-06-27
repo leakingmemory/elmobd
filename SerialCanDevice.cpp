@@ -236,6 +236,15 @@ uint32_t SerialCanDevice::ElmHeader(const std::string &msg) {
     return h;
 }
 
+uint16_t SerialCanDevice::ReplyMode(const std::string &msg) {
+    if (msg.size() < 4) {
+        return 0;
+    }
+    uint16_t h = (unsigned char) (msg.at(3));
+    h = h - 0x40;
+    return h;
+}
+
 uint16_t SerialCanDevice::ReplyCmd(const std::string &msg) {
     if (msg.size() < 5) {
         return 0;
@@ -258,6 +267,13 @@ uint64_t SerialCanDevice::PayloadInt(const std::string &msg) {
         res |= (unsigned char) (msg.at(i));
     }
     return res;
+}
+
+std::string SerialCanDevice::PayloadMode(const std::string &msg) {
+    if (msg.size() < 6) {
+        return "";
+    }
+    return msg.substr(4, msg.size() - 5);
 }
 
 std::string SerialCanDevice::Payload(const std::string &msg) {

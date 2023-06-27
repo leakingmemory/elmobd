@@ -33,8 +33,10 @@ public:
     ~SerialCanDevice();
     static std::string DecodeHex(const std::string &);
     static uint32_t ElmHeader(const std::string &msg);
+    static uint16_t ReplyMode(const std::string &msg);
     static uint16_t ReplyCmd(const std::string &msg);
     static uint64_t PayloadInt(const std::string &msg);
+    static std::string PayloadMode(const std::string &msg);
     static std::string Payload(const std::string &msg);
 private:
     void Drain();

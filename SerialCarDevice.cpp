@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <sstream>
 #include "SerialCarDevice.h"
 #include "SerialInterface.h"
 
@@ -583,4 +584,66 @@ void SerialCarDevice::ClearDTCEtc() const {
     serialInterface->Write("04\r");
     std::string buf{};
     WaitForPrompt(buf , 5000);
+}
+
+std::vector<std::string> SerialCarDevice::GetDTCs() const {
+    serialInterface->Write("03\r");
+    std::vector<std::string> lns{};
+    {
+        std::string buf{};
+        auto data = WaitForPrompt(buf, 7000);
+        {
+            auto iterator = data.begin();
+            while (iterator != data.end()) {
+                if (*iterator == ' ') {
+                    data.erase(iterator);
+                } else {
+                    ++iterator;
+                }
+            }
+        }
+        lns = SplitLines(data);
+    }
+    std::vector<unsigned int> codes{};
+    for (const auto ln : lns) {
+        auto msg = DecodeHex(ln);
+        if (ReplyMode(msg) == 3) {
+            auto rawcodes = PayloadMode(msg);
+            auto iterator = rawcodes.begin();
+            while (iterator != rawcodes.end()) {
+                unsigned int a = (unsigned int) *iterator;
+                ++iterator;
+                if (iterator != rawcodes.end()) {
+                    unsigned int b = (unsigned int) *iterator;
+                    ++iterator;
+                    a = (a << 8) & 0xff00;
+                    b = b & 0xff;
+                    codes.emplace_back(a | b);
+                }
+            }
+        }
+    }
+    std::vector<std::string> strcodes{};
+    for (auto code : codes) {
+        std::stringstream sstr{};
+        auto category = (code >> 14) & 0x0003;
+        switch (category) {
+            case 0:
+                sstr << "P";
+                break;
+            case 1:
+                sstr << "C";
+                break;
+            case 2:
+                sstr << "B";
+                break;
+            case 3:
+                sstr << "U";
+                break;
+        }
+        code = code & 0x3FFF;
+        sstr << std::hex << code;
+        strcodes.emplace_back(sstr.str());
+    }
+    return strcodes;
 }

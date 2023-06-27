@@ -51,6 +51,7 @@ public:
     bool HasVIN() const override;
     std::string GetVIN() const override;
     void ClearDTCEtc() const;
+    std::vector<std::string> GetDTCs() const;
 };
 
 
