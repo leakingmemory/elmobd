@@ -18,6 +18,7 @@ public:
     virtual void DrawBackground(int x, int y, int width, int height) = 0;
     virtual void BlankForeground(int x, int y, int width, int height) = 0;
     virtual void DrawForeground(int x, int y, int width, int height) = 0;
+    virtual void Clicked() = 0;
 };
 
 #endif //ELMOBD_WIDGET_H

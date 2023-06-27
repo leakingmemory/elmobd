@@ -97,3 +97,6 @@ void WarningsPanel::Update() {
 PriorityCategory WarningsPanel::GetPriorityCategory() const {
     return PriorityCategory::HIGH;
 }
+
+void WarningsPanel::Clicked() {
+}

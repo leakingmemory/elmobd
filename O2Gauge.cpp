@@ -49,3 +49,6 @@ void O2Gauge::Update() {
 PriorityCategory O2Gauge::GetPriorityCategory() const {
     return PriorityCategory::LOW;
 }
+
+void O2Gauge::Clicked() {
+}

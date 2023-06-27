@@ -144,3 +144,6 @@ void AnalogGauge::BlankForeground(int x, int y, int width, int height) {
 void AnalogGauge::DrawForeground(int x, int y, int width, int height) {
     DrawNeedle(gc, needleValue, x, y, width, height);
 }
+
+void AnalogGauge::Clicked() {
+}

@@ -126,6 +126,9 @@ void ElmObdDisplay::Run() const {
             }
         }
     }};
+    std::thread events{[&window] () {
+        window->EventsLoop();
+    }};
 
     try {
         std::vector<std::shared_ptr<Meter>> highpri{};

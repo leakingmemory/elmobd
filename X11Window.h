@@ -40,6 +40,7 @@ public:
     int GetScreenNum() const {
         return screenNum;
     }
+    virtual void EventsLoop() = 0;
 };
 
 #endif //ELMOBD_X11WINDOW_H

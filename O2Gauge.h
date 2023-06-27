@@ -28,6 +28,7 @@ public:
     void DrawForeground(int x, int y, int width, int height) override;
     void Update() override;
     PriorityCategory GetPriorityCategory() const override;
+    void Clicked();
 };
 
 

@@ -24,6 +24,7 @@ public:
     X11WindowImpl(const std::shared_ptr<X11Display> &display, int screen_num, int width, int height, int x, int y);
     const X11WindowImpl &Impl() const override;
     std::shared_ptr<X11WindowImpl> ImplRef() override;
+    void EventsLoop() override;
 };
 
 

@@ -43,6 +43,7 @@ public:
     void DrawBackground(int x, int y, int width, int height) override;
     void BlankForeground(int x, int y, int width, int height) override;
     void DrawForeground(int x, int y, int width, int height) override;
+    virtual void Clicked() override;
 };
 
 
