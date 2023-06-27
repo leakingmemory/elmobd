@@ -10,8 +10,18 @@ int main() {
     serialInterface.SetSpeed(SerialSpeed::S38400);
     serialInterface.CommitAttributes();
     SerialCarDevice serialCarDevice{std::move(serialInterface)};
-    auto dtcs = serialCarDevice.GetDTCs();
-    for (auto dtc : dtcs) {
-        std::cout << dtc << "\n";
+    {
+        auto dtcs = serialCarDevice.GetDTCs();
+        std::cout << "Stored DTCs:\n";
+        for (auto dtc: dtcs) {
+            std::cout << dtc << "\n";
+        }
+    }
+    {
+        auto dtcs = serialCarDevice.GetPendingDTCs();
+        std::cout << "Pending DTCs:\n";
+        for (auto dtc: dtcs) {
+            std::cout << dtc << "\n";
+        }
     }
 }
