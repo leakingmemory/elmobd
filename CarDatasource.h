@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 struct OBDStatus {
     uint8_t DTCs;
@@ -110,6 +111,8 @@ public:
     virtual O2Sensor GetO2Sensor(int n) const = 0;
     virtual bool HasVIN() const = 0;
     virtual std::string GetVIN() const = 0;
+    virtual void ClearDTCEtc() = 0;
+    virtual std::vector<std::string> GetDTCs() const = 0;
 };
 
 #endif //ELMOBD_CARDATASOURCE_H

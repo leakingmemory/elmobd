@@ -580,7 +580,7 @@ std::string SerialCarDevice::GetVIN() const {
     return vin;
 }
 
-void SerialCarDevice::ClearDTCEtc() const {
+void SerialCarDevice::ClearDTCEtc() {
     serialInterface->Write("04\r");
     std::string buf{};
     WaitForPrompt(buf , 5000);

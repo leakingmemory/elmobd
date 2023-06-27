@@ -16,6 +16,7 @@
 #include "Bank2LongTermFuelTrimGauge.h"
 #include "O2Gauge.h"
 #include "EngCoolantTempGauge.h"
+#include "DtcMonitor.h"
 #include "WarningsPanel.h"
 #include <thread>
 #include <chrono>
@@ -102,6 +103,10 @@ void ElmObdDisplay::Run() const {
             window->Add(gauge, x, 0, 200, 300);
             meters.emplace_back(gauge);
         }
+    }
+    {
+        auto dtcMeter = std::make_shared<DtcMonitor>(carDatasource, warningsData);
+        meters.emplace_back(dtcMeter);
     }
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(1s);

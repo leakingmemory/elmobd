@@ -50,8 +50,8 @@ public:
     O2Sensor GetO2Sensor(int n) const override;
     bool HasVIN() const override;
     std::string GetVIN() const override;
-    void ClearDTCEtc() const;
-    std::vector<std::string> GetDTCs() const;
+    void ClearDTCEtc() override;
+    std::vector<std::string> GetDTCs() const override;
 };
 
 

@@ -572,6 +572,53 @@ std::string ResilientCarDatasource::GetVIN() const {
     return "";
 }
 
+std::vector<std::string> ResilientCarDatasource::GetDTCs() const {
+    std::shared_ptr<CarDatasource> conn;
+    bool connecting;
+    {
+        std::lock_guard lock{*mtx};
+        conn = c->carDatasource;
+        connecting = c->connecting;
+    }
+    if (conn) {
+        try {
+            return conn->GetDTCs();
+        } catch (...) {
+            Connect();
+        }
+    } else if (!connecting) {
+        Connect();
+    }
+    {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
+    }
+    return {};
+}
+
+void ResilientCarDatasource::ClearDTCEtc() {
+    std::shared_ptr<CarDatasource> conn;
+    bool connecting;
+    {
+        std::lock_guard lock{*mtx};
+        conn = c->carDatasource;
+        connecting = c->connecting;
+    }
+    if (conn) {
+        try {
+            conn->ClearDTCEtc();
+        } catch (...) {
+            Connect();
+        }
+    } else if (!connecting) {
+        Connect();
+    }
+    {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
+    }
+}
+
 ResilientOBDCarDatasource::ResilientOBDCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : ResilientCarDatasource(warningsData) {
     {
         const char *envproto = getenv("PROTOCOL");

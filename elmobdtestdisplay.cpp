@@ -18,7 +18,14 @@ static void RandomException() {
 }
 
 class TestDatasource : public CarDatasource {
+private:
+    std::vector<std::string> errorCodes{};
 public:
+    TestDatasource() {
+        errorCodes.emplace_back("P171");
+        errorCodes.emplace_back("P174");
+        errorCodes.emplace_back("P332");
+    }
     void Disconnect() override {
     }
     virtual bool HasStatus() const {
@@ -182,6 +189,12 @@ public:
     }
     virtual std::string GetVIN() const {
         return "";
+    }
+    virtual void ClearDTCEtc() {
+        errorCodes.clear();
+    }
+    virtual std::vector<std::string> GetDTCs() const {
+        return errorCodes;
     }
 };
 
