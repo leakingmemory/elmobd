@@ -15,11 +15,19 @@ void AnalogGauge::Init(std::shared_ptr<X11Window> window) {
     this->gc = X11GC::Create(window);
     this->blankGc = X11GC::Create(window);
     this->blankGc->SetForegroundBlack();
+    this->redGc = X11GC::Create(window);
+    this->redGc->SetForegroundRed();
 }
 
 void AnalogGauge::SetCurrentValue(float value) {
     std::lock_guard lock{currentValueMtx};
     currentValue = value;
+    validValue = true;
+}
+
+void AnalogGauge::SetInvalid() {
+    std::lock_guard lock{currentValueMtx};
+    validValue = false;
 }
 
 static float NeedleValue(float currentValue, float needleValue) {
@@ -29,7 +37,7 @@ static float NeedleValue(float currentValue, float needleValue) {
 bool AnalogGauge::HasPendingMutation() {
     std::lock_guard lock{currentValueMtx};
     bool pending = abs(NeedleValue(currentValue, needleValue) - needleValue) > 0.001;
-    return pending;
+    return pending || (validValue != displayedValid);
 }
 
 void AnalogGauge::Mutate() {
@@ -73,7 +81,41 @@ void AnalogGauge::DrawNeedle(const std::shared_ptr<X11GC> &usingGc, float value,
     XDrawLine(display, window, gc, x0_3, y0_3, x3, y3);
 }
 
+void
+AnalogGauge::DrawInvalidFlag(const std::shared_ptr<X11GC> &usingGc, int x, int y, int width, int height) {
+    std::shared_ptr<X11Window> windowSh = this->window.lock();
+    auto d = width / 4;
+    {
+        auto d2 = height / 4;
+        if (d2 < d) {
+            d = d2;
+        }
+    }
+    auto w = width / 2;
+    auto h = height / 2;
+    auto x1 = x + w - d;
+    auto x2 = x + w + d;
+    auto y1 = y + h - d;
+    auto y2 = y + h + d;
+    auto *display = windowSh->display->Impl().display;
+    auto &window = windowSh->Impl().window;
+    auto &gc = usingGc->Impl().gc;
+    XDrawLine(display, window, gc, x1, y1, x2, y2);
+    XDrawLine(display, window, gc, x1, y2, x2, y1);
+}
+
 void AnalogGauge::DrawBackground(int x, int y, int width, int height) {
+    bool drawValid{false};
+    {
+        std::lock_guard lock{currentValueMtx};
+        if (validValue && (validValue != displayedValid)) {
+            drawValid = true;
+            displayedValid = validValue;
+        }
+    }
+    if (drawValid) {
+        DrawInvalidFlag(blankGc, x, y, width, height);
+    }
     std::shared_ptr<X11Window> windowSh = this->window.lock();
     float radMin = ((float) this->degMin) * M_PI / 180.0f;
     float radSpan = (((float) this->degMax) * M_PI / 180.0f) - radMin;
@@ -143,6 +185,17 @@ void AnalogGauge::BlankForeground(int x, int y, int width, int height) {
 
 void AnalogGauge::DrawForeground(int x, int y, int width, int height) {
     DrawNeedle(gc, needleValue, x, y, width, height);
+    bool drawInvalid{false};
+    {
+        std::lock_guard lock{currentValueMtx};
+        if (!validValue) {
+            drawInvalid = true;
+            displayedValid = validValue;
+        }
+    }
+    if (drawInvalid) {
+        DrawInvalidFlag(redGc, x, y, width, height);
+    }
 }
 
 void AnalogGauge::Clicked() {

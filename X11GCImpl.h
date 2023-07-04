@@ -28,6 +28,7 @@ public:
     ~X11GCImpl() override;
     const X11GCImpl &Impl() const override;
     void SetForegroundBlack() override;
+    void SetForegroundRed() override;
 };
 
 #endif //ELMOBD_X11GCIMPL_H

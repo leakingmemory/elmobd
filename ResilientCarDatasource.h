@@ -54,36 +54,38 @@ public:
     bool HasMassAirFlow() const override;
     bool HasThrottlePos() const override;
     bool HasO2Sensor(int n) const override;
-    template <class T> T Resilient(const std::function<T (CarDatasource &conn)> &func, T invalidValue) const {
-        T value = invalidValue;
-        Resilient([&value, &func] (auto &conn) {
+    template <class T> std::optional<T> Resilient(const std::function<std::optional<T> (CarDatasource &conn)> &func) const {
+        std::optional<T> value = {};
+        if (Resilient([&value, &func] (auto &conn) {
             value = func(conn);
-        });
-        return value;
+        })) {
+            return value;
+        }
+        return {};
     }
-    void Resilient(const std::function<void (CarDatasource &conn)> &func) const;
-    OBDStatus GetStatus() const override;
-    FuelSystemStatus GetFuelSystemStatus() const override;
-    int GetCalculatedLoad() const override;
-    int GetCoolantTemperature() const override;
-    int GetShortTermFuelTrimBank1() const override;
-    int GetLongTermFuelTrimBank1() const override;
-    int GetShortTermFuelTrimBank2() const override;
-    int GetLongTermFuelTrimBank2() const override;
-    int GetFuelGaugePressure() const override;
-    int GetIntakeManifoldAbsPressure() const override;
-    int GetRPM() const override;
-    int GetSpeed() const override;
-    float GetTimingAdvance() const override;
-    int GetIntakeAirTemperature() const override;
-    float GetMassAirFlow() const override;
-    float GetThrottlePos() const override;
-    O2Sensor GetO2Sensor(int n) const override;
+    bool Resilient(const std::function<void (CarDatasource &conn)> &func) const;
+    std::optional<OBDStatus> GetStatus() const override;
+    std::optional<FuelSystemStatus> GetFuelSystemStatus() const override;
+    std::optional<int> GetCalculatedLoad() const override;
+    std::optional<int> GetCoolantTemperature() const override;
+    std::optional<int> GetShortTermFuelTrimBank1() const override;
+    std::optional<int> GetLongTermFuelTrimBank1() const override;
+    std::optional<int> GetShortTermFuelTrimBank2() const override;
+    std::optional<int> GetLongTermFuelTrimBank2() const override;
+    std::optional<int> GetFuelGaugePressure() const override;
+    std::optional<int> GetIntakeManifoldAbsPressure() const override;
+    std::optional<int> GetRPM() const override;
+    std::optional<int> GetSpeed() const override;
+    std::optional<float> GetTimingAdvance() const override;
+    std::optional<int> GetIntakeAirTemperature() const override;
+    std::optional<float> GetMassAirFlow() const override;
+    std::optional<float> GetThrottlePos() const override;
+    std::optional<O2Sensor> GetO2Sensor(int n) const override;
     bool HasVIN() const override;
-    std::string GetVIN() const override;
-    void ClearDTCEtc() override;
-    std::vector<std::string> GetDTCs() const override;
-    std::vector<std::string> GetPendingDTCs() const override;
+    std::optional<std::string> GetVIN() const override;
+    bool ClearDTCEtc() override;
+    std::optional<std::vector<std::string>> GetDTCs() const override;
+    std::optional<std::vector<std::string>> GetPendingDTCs() const override;
 };
 
 class ResilientOBDCarDatasource : public ResilientCarDatasource {

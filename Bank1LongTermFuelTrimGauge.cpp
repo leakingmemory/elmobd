@@ -14,14 +14,19 @@ Bank1LongTermFuelTrimGauge::~Bank1LongTermFuelTrimGauge() {
 }
 
 void Bank1LongTermFuelTrimGauge::Update() {
-    auto trim = serialCarDevice->GetLongTermFuelTrimBank1();
-    SetCurrentValue(trim);
+    auto optTrim = serialCarDevice->GetLongTermFuelTrimBank1();
     std::vector<std::string> messages{};
-    if (trim < -25) {
-        messages.emplace_back("FUEL RICH 1");
-    }
-    if (trim > 25) {
-        messages.emplace_back("FUEL LEAN 1");
+    if (optTrim) {
+        auto trim = *optTrim;
+        SetCurrentValue((float) trim);
+        if (trim < -25) {
+            messages.emplace_back("FUEL RICH 1");
+        }
+        if (trim > 25) {
+            messages.emplace_back("FUEL LEAN 1");
+        }
+    } else {
+        SetInvalid();
     }
     std::lock_guard lock{warningsList->mtx};
     warningsList->messages = messages;

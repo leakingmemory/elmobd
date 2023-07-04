@@ -12,8 +12,12 @@ MassFlowGauge::MassFlowGauge(const std::shared_ptr<CarDatasource> &serialCarDevi
 }
 
 void MassFlowGauge::Update() {
-    float mass = (float) serialCarDevice->GetMassAirFlow();
-    SetCurrentValue(mass);
+    auto mass = serialCarDevice->GetMassAirFlow();
+    if (mass) {
+        SetCurrentValue((float) *mass);
+    } else {
+        SetInvalid();
+    }
 }
 
 PriorityCategory MassFlowGauge::GetPriorityCategory() const {

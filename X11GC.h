@@ -17,6 +17,7 @@ public:
     static std::shared_ptr<X11GC> Create(const std::shared_ptr<X11Window> &window);
     virtual const X11GCImpl &Impl() const = 0;
     virtual void SetForegroundBlack() = 0;
+    virtual void SetForegroundRed() = 0;
 };
 
 

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <optional>
 
 struct OBDStatus {
     uint8_t DTCs;
@@ -92,28 +93,28 @@ public:
     virtual bool HasMassAirFlow() const = 0;
     virtual bool HasThrottlePos() const = 0;
     virtual bool HasO2Sensor(int n) const = 0;
-    virtual OBDStatus GetStatus() const = 0;
-    virtual FuelSystemStatus GetFuelSystemStatus() const = 0;
-    virtual int GetCalculatedLoad() const = 0;
-    virtual int GetCoolantTemperature() const = 0;
-    virtual int GetShortTermFuelTrimBank1() const = 0;
-    virtual int GetLongTermFuelTrimBank1() const = 0;
-    virtual int GetShortTermFuelTrimBank2() const = 0;
-    virtual int GetLongTermFuelTrimBank2() const = 0;
-    virtual int GetFuelGaugePressure() const = 0;
-    virtual int GetIntakeManifoldAbsPressure() const = 0;
-    virtual int GetRPM() const = 0;
-    virtual int GetSpeed() const = 0;
-    virtual float GetTimingAdvance() const = 0;
-    virtual int GetIntakeAirTemperature() const = 0;
-    virtual float GetMassAirFlow() const = 0;
-    virtual float GetThrottlePos() const = 0;
-    virtual O2Sensor GetO2Sensor(int n) const = 0;
+    virtual std::optional<OBDStatus> GetStatus() const = 0;
+    virtual std::optional<FuelSystemStatus> GetFuelSystemStatus() const = 0;
+    virtual std::optional<int> GetCalculatedLoad() const = 0;
+    virtual std::optional<int> GetCoolantTemperature() const = 0;
+    virtual std::optional<int> GetShortTermFuelTrimBank1() const = 0;
+    virtual std::optional<int> GetLongTermFuelTrimBank1() const = 0;
+    virtual std::optional<int> GetShortTermFuelTrimBank2() const = 0;
+    virtual std::optional<int> GetLongTermFuelTrimBank2() const = 0;
+    virtual std::optional<int> GetFuelGaugePressure() const = 0;
+    virtual std::optional<int> GetIntakeManifoldAbsPressure() const = 0;
+    virtual std::optional<int> GetRPM() const = 0;
+    virtual std::optional<int> GetSpeed() const = 0;
+    virtual std::optional<float> GetTimingAdvance() const = 0;
+    virtual std::optional<int> GetIntakeAirTemperature() const = 0;
+    virtual std::optional<float> GetMassAirFlow() const = 0;
+    virtual std::optional<float> GetThrottlePos() const = 0;
+    virtual std::optional<O2Sensor> GetO2Sensor(int n) const = 0;
     virtual bool HasVIN() const = 0;
-    virtual std::string GetVIN() const = 0;
-    virtual void ClearDTCEtc() = 0;
-    virtual std::vector<std::string> GetDTCs() const = 0;
-    virtual std::vector<std::string> GetPendingDTCs() const = 0;
+    virtual std::optional<std::string> GetVIN() const = 0;
+    virtual bool ClearDTCEtc() = 0;
+    virtual std::optional<std::vector<std::string>> GetDTCs() const = 0;
+    virtual std::optional<std::vector<std::string>> GetPendingDTCs() const = 0;
 };
 
 #endif //ELMOBD_CARDATASOURCE_H

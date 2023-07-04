@@ -16,6 +16,7 @@ private:
     std::weak_ptr<X11Window> window;
     std::shared_ptr<X11GC> gc;
     std::shared_ptr<X11GC> blankGc;
+    std::shared_ptr<X11GC> redGc;
 protected:
     float max{100.0f};
     float min{0.0f};
@@ -34,10 +35,14 @@ protected:
 private:
     float currentValue{75.0f};
     float needleValue{1.0f};
+    bool validValue{false};
+    bool displayedValid{true};
 public:
     void Init(std::shared_ptr<X11Window> window) override;
     void DrawNeedle(const std::shared_ptr<X11GC> &usingGc, float value, int x, int y, int width, int height);
+    void DrawInvalidFlag(const std::shared_ptr<X11GC> &usingGc, int x, int y, int width, int height);
     void SetCurrentValue(float value);
+    void SetInvalid();
     bool HasPendingMutation() override;
     void Mutate() override;
     void DrawBackground(int x, int y, int width, int height) override;

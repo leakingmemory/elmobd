@@ -42,3 +42,17 @@ void X11GCImpl::SetForegroundBlack() {
     XFlush(disp);
     XSync(disp, False);
 }
+
+void X11GCImpl::SetForegroundRed() {
+    XColor xcolor = {
+            .red = 65535,
+            .green = 0,
+            .blue = 0,
+            .flags = (DoRed | DoGreen | DoBlue)
+    };
+    auto *disp = display->Impl().display;
+    XAllocColor(disp, DefaultColormap(disp, screen), &xcolor);
+    XSetForeground(disp, gc, xcolor.pixel);
+    XFlush(disp);
+    XSync(disp, False);
+}

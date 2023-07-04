@@ -13,36 +13,39 @@ DtcMonitor::DtcMonitor(const std::shared_ptr<CarDatasource> &serialCarDevice,
 }
 
 void DtcMonitor::Update() {
-    auto newDtcs = GetCodes();
-    {
-        auto iterator = dtcs.begin();
-        while (iterator != dtcs.end()) {
+    auto optNewDtcs = GetCodes();
+    if (optNewDtcs) {
+        auto &newDtcs = *optNewDtcs;
+        {
+            auto iterator = dtcs.begin();
+            while (iterator != dtcs.end()) {
+                bool found{false};
+                for (const auto &dtc: newDtcs) {
+                    if (dtc == *iterator) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    ++iterator;
+                } else {
+                    std::cout << "Cleared stored " << GetPrefix() << *iterator << "\n";
+                    dtcs.erase(iterator);
+                }
+            }
+        }
+        for (const auto &ndtc: newDtcs) {
             bool found{false};
-            for (const auto &dtc : newDtcs) {
-                if (dtc == *iterator) {
+            for (const auto &dtc: dtcs) {
+                if (ndtc == dtc) {
                     found = true;
                     break;
                 }
             }
-            if (found) {
-                ++iterator;
-            } else {
-                std::cout << "Cleared stored " << GetPrefix() << *iterator << "\n";
-                dtcs.erase(iterator);
+            if (!found) {
+                std::cout << "New stored " << GetPrefix() << ndtc << "\n";
+                dtcs.emplace_back(ndtc);
             }
-        }
-    }
-    for (const auto &ndtc : newDtcs) {
-        bool found{false};
-        for (const auto &dtc : dtcs) {
-            if (ndtc == dtc) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            std::cout << "New stored " << GetPrefix() << ndtc << "\n";
-            dtcs.emplace_back(ndtc);
         }
     }
     std::vector<std::string> messages{};
@@ -68,7 +71,7 @@ std::string DtcStoredMonitor::GetPrefix() const {
     return "S ";
 }
 
-std::vector<std::string> DtcStoredMonitor::GetCodes() const {
+std::optional<std::vector<std::string>> DtcStoredMonitor::GetCodes() const {
     return carDatasource->GetDTCs();
 }
 
@@ -76,6 +79,6 @@ std::string DtcPendingMonitor::GetPrefix() const {
     return "P ";
 }
 
-std::vector<std::string> DtcPendingMonitor::GetCodes() const {
+std::optional<std::vector<std::string>> DtcPendingMonitor::GetCodes() const {
     return carDatasource->GetPendingDTCs();
 }

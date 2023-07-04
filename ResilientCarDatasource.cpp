@@ -154,7 +154,7 @@ bool ResilientCarDatasource::HasO2Sensor(int n) const {
     return c->capsCarDatasource->HasO2Sensor(n);
 }
 
-void ResilientCarDatasource::Resilient(const std::function<void(CarDatasource &)> &func) const {
+bool ResilientCarDatasource::Resilient(const std::function<void(CarDatasource &)> &func) const {
     std::shared_ptr<CarDatasource> conn;
     bool connecting;
     {
@@ -165,7 +165,7 @@ void ResilientCarDatasource::Resilient(const std::function<void(CarDatasource &)
     if (conn) {
         try {
             func(*conn);
-            return;
+            return true;
         } catch (...) {
             Connect();
         }
@@ -176,77 +176,78 @@ void ResilientCarDatasource::Resilient(const std::function<void(CarDatasource &)
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1s);
     }
+    return false;
 }
 
-OBDStatus ResilientCarDatasource::GetStatus() const {
-    return Resilient<OBDStatus>([] (CarDatasource &conn) {return conn.GetStatus(); }, {});
+std::optional<OBDStatus> ResilientCarDatasource::GetStatus() const {
+    return Resilient<OBDStatus>([] (CarDatasource &conn) {return conn.GetStatus(); });
 }
-FuelSystemStatus ResilientCarDatasource::GetFuelSystemStatus() const {
-    return Resilient<FuelSystemStatus>([] (CarDatasource &conn) {return conn.GetFuelSystemStatus();}, {});
+std::optional<FuelSystemStatus> ResilientCarDatasource::GetFuelSystemStatus() const {
+    return Resilient<FuelSystemStatus>([] (CarDatasource &conn) {return conn.GetFuelSystemStatus();});
 }
-int ResilientCarDatasource::GetCalculatedLoad() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetCalculatedLoad();}, -1);
+std::optional<int> ResilientCarDatasource::GetCalculatedLoad() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetCalculatedLoad();});
 }
-int ResilientCarDatasource::GetCoolantTemperature() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetCoolantTemperature();}, -1);
+std::optional<int> ResilientCarDatasource::GetCoolantTemperature() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetCoolantTemperature();});
 }
-int ResilientCarDatasource::GetShortTermFuelTrimBank1() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetShortTermFuelTrimBank1();}, 155);
+std::optional<int> ResilientCarDatasource::GetShortTermFuelTrimBank1() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetShortTermFuelTrimBank1();});
 }
-int ResilientCarDatasource::GetLongTermFuelTrimBank1() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetLongTermFuelTrimBank1();}, 155);
+std::optional<int> ResilientCarDatasource::GetLongTermFuelTrimBank1() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetLongTermFuelTrimBank1();});
 }
-int ResilientCarDatasource::GetShortTermFuelTrimBank2() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetShortTermFuelTrimBank2();}, 155);
+std::optional<int> ResilientCarDatasource::GetShortTermFuelTrimBank2() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetShortTermFuelTrimBank2();});
 }
-int ResilientCarDatasource::GetLongTermFuelTrimBank2() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetLongTermFuelTrimBank2();}, 155);
+std::optional<int> ResilientCarDatasource::GetLongTermFuelTrimBank2() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetLongTermFuelTrimBank2();});
 }
-int ResilientCarDatasource::GetFuelGaugePressure() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetFuelGaugePressure();}, -1);
+std::optional<int> ResilientCarDatasource::GetFuelGaugePressure() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetFuelGaugePressure();});
 }
-int ResilientCarDatasource::GetIntakeManifoldAbsPressure() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetIntakeManifoldAbsPressure(); }, -1);
+std::optional<int> ResilientCarDatasource::GetIntakeManifoldAbsPressure() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetIntakeManifoldAbsPressure(); });
 }
-int ResilientCarDatasource::GetRPM() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetRPM();}, -1);
+std::optional<int> ResilientCarDatasource::GetRPM() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetRPM();});
 }
-int ResilientCarDatasource::GetSpeed() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetSpeed();}, -1);
+std::optional<int> ResilientCarDatasource::GetSpeed() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetSpeed();});
 }
-float ResilientCarDatasource::GetTimingAdvance() const {
-    return Resilient<float>([] (auto &conn) {return conn.GetTimingAdvance();}, -1);
+std::optional<float> ResilientCarDatasource::GetTimingAdvance() const {
+    return Resilient<float>([] (auto &conn) {return conn.GetTimingAdvance();});
 }
-int ResilientCarDatasource::GetIntakeAirTemperature() const {
-    return Resilient<int>([] (auto &conn) {return conn.GetIntakeAirTemperature();}, -1);
+std::optional<int> ResilientCarDatasource::GetIntakeAirTemperature() const {
+    return Resilient<int>([] (auto &conn) {return conn.GetIntakeAirTemperature();});
 }
-float ResilientCarDatasource::GetMassAirFlow() const {
-    return Resilient<float>([] (auto &conn) {return conn.GetMassAirFlow();}, -1);
+std::optional<float> ResilientCarDatasource::GetMassAirFlow() const {
+    return Resilient<float>([] (auto &conn) {return conn.GetMassAirFlow();});
 }
-float ResilientCarDatasource::GetThrottlePos() const {
-    return Resilient<float>([] (auto &conn) {return conn.GetThrottlePos();}, -1);
+std::optional<float> ResilientCarDatasource::GetThrottlePos() const {
+    return Resilient<float>([] (auto &conn) {return conn.GetThrottlePos();});
 }
-O2Sensor ResilientCarDatasource::GetO2Sensor(int n) const {
-    return Resilient<O2Sensor>([n] (auto &conn) {return conn.GetO2Sensor(n);}, {});
+std::optional<O2Sensor> ResilientCarDatasource::GetO2Sensor(int n) const {
+    return Resilient<O2Sensor>([n] (auto &conn) {return conn.GetO2Sensor(n);});
 }
 bool ResilientCarDatasource::HasVIN() const {
     std::lock_guard lock{*mtx};
     return c->capsCarDatasource->HasVIN();
 }
-std::string ResilientCarDatasource::GetVIN() const {
-    return Resilient<std::string>([] (auto &conn) {return conn.GetVIN();}, "");
+std::optional<std::string> ResilientCarDatasource::GetVIN() const {
+    return Resilient<std::string>([] (auto &conn) {return conn.GetVIN();});
 }
 
-std::vector<std::string> ResilientCarDatasource::GetDTCs() const {
-    return Resilient<std::vector<std::string>>([] (auto &conn) {return conn.GetDTCs();}, {});
+std::optional<std::vector<std::string>> ResilientCarDatasource::GetDTCs() const {
+    return Resilient<std::vector<std::string>>([] (auto &conn) {return conn.GetDTCs();});
 }
 
-std::vector<std::string> ResilientCarDatasource::GetPendingDTCs() const {
-    return Resilient<std::vector<std::string>>([] (auto &conn) {return conn.GetPendingDTCs();}, {});
+std::optional<std::vector<std::string>> ResilientCarDatasource::GetPendingDTCs() const {
+    return Resilient<std::vector<std::string>>([] (auto &conn) {return conn.GetPendingDTCs();});
 }
 
-void ResilientCarDatasource::ClearDTCEtc() {
-    Resilient([] (auto &conn) {conn.ClearDTCEtc();});
+bool ResilientCarDatasource::ClearDTCEtc() {
+    return Resilient([] (auto &conn) {conn.ClearDTCEtc();});
 }
 
 ResilientOBDCarDatasource::ResilientOBDCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : ResilientCarDatasource(warningsData) {

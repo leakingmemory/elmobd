@@ -168,7 +168,7 @@ bool SerialCarDevice::HasVIN() const {
     }
 }
 
-OBDStatus SerialCarDevice::GetStatus() const {
+std::optional<OBDStatus> SerialCarDevice::GetStatus() const {
     serialInterface->Write("0101\r");
     std::string buf{};
     std::string ln{};
@@ -241,7 +241,7 @@ constexpr FuelSystemStatusValue Decode(uint8_t val) {
     }
 }
 
-FuelSystemStatus SerialCarDevice::GetFuelSystemStatus() const {
+std::optional<FuelSystemStatus> SerialCarDevice::GetFuelSystemStatus() const {
     serialInterface->Write("0103\r");
     std::string buf{};
     std::string ln{};
@@ -255,13 +255,13 @@ FuelSystemStatus SerialCarDevice::GetFuelSystemStatus() const {
     uint16_t statusw = (uint16_t) PayloadInt(msg);
     uint8_t s1 = (uint8_t) ((statusw >> 8) & 0xFF);
     uint8_t s2 = (uint8_t) (statusw & 0xFF);
-    return {
+    return {{
         .system1 = Decode(s1),
         .system2 = Decode(s2)
-    };
+    }};
 }
 
-int SerialCarDevice::GetCalculatedLoad() const {
+std::optional<int> SerialCarDevice::GetCalculatedLoad() const {
     serialInterface->Write("0104\r");
     std::string buf{};
     std::string ln{};
@@ -278,7 +278,7 @@ int SerialCarDevice::GetCalculatedLoad() const {
     return cload;
 }
 
-int SerialCarDevice::GetCoolantTemperature() const {
+std::optional<int> SerialCarDevice::GetCoolantTemperature() const {
     serialInterface->Write("0105\r");
     std::string buf{};
     std::string ln{};
@@ -294,7 +294,7 @@ int SerialCarDevice::GetCoolantTemperature() const {
     return coolant;
 }
 
-int SerialCarDevice::GetShortTermFuelTrimBank1() const {
+std::optional<int> SerialCarDevice::GetShortTermFuelTrimBank1() const {
     serialInterface->Write("0106\r");
     std::string buf{};
     std::string ln{};
@@ -312,7 +312,7 @@ int SerialCarDevice::GetShortTermFuelTrimBank1() const {
     return trim;
 }
 
-int SerialCarDevice::GetLongTermFuelTrimBank1() const {
+std::optional<int> SerialCarDevice::GetLongTermFuelTrimBank1() const {
     serialInterface->Write("0107\r");
     std::string buf{};
     std::string ln{};
@@ -330,7 +330,7 @@ int SerialCarDevice::GetLongTermFuelTrimBank1() const {
     return trim;
 }
 
-int SerialCarDevice::GetShortTermFuelTrimBank2() const {
+std::optional<int> SerialCarDevice::GetShortTermFuelTrimBank2() const {
     serialInterface->Write("0108\r");
     std::string buf{};
     std::string ln{};
@@ -348,7 +348,7 @@ int SerialCarDevice::GetShortTermFuelTrimBank2() const {
     return trim;
 }
 
-int SerialCarDevice::GetLongTermFuelTrimBank2() const {
+std::optional<int> SerialCarDevice::GetLongTermFuelTrimBank2() const {
     serialInterface->Write("0109\r");
     std::string buf{};
     std::string ln{};
@@ -366,7 +366,7 @@ int SerialCarDevice::GetLongTermFuelTrimBank2() const {
     return trim;
 }
 
-int SerialCarDevice::GetFuelGaugePressure() const {
+std::optional<int> SerialCarDevice::GetFuelGaugePressure() const {
     serialInterface->Write("010A\r");
     std::string buf{};
     std::string ln{};
@@ -382,7 +382,7 @@ int SerialCarDevice::GetFuelGaugePressure() const {
     return press;
 }
 
-int SerialCarDevice::GetIntakeManifoldAbsPressure() const {
+std::optional<int> SerialCarDevice::GetIntakeManifoldAbsPressure() const {
     serialInterface->Write("010B\r");
     std::string buf{};
     std::string ln{};
@@ -397,7 +397,7 @@ int SerialCarDevice::GetIntakeManifoldAbsPressure() const {
     return press;
 }
 
-int SerialCarDevice::GetRPM() const {
+std::optional<int> SerialCarDevice::GetRPM() const {
     serialInterface->Write("010C\r");
     std::string buf{};
     std::string ln{};
@@ -413,7 +413,7 @@ int SerialCarDevice::GetRPM() const {
     return (int) (rawRpm / 4);
 }
 
-int SerialCarDevice::GetSpeed() const {
+std::optional<int> SerialCarDevice::GetSpeed() const {
     serialInterface->Write("010D\r");
     std::string buf{};
     std::string ln{};
@@ -429,7 +429,7 @@ int SerialCarDevice::GetSpeed() const {
     return speed;
 }
 
-float SerialCarDevice::GetTimingAdvance() const {
+std::optional<float> SerialCarDevice::GetTimingAdvance() const {
     serialInterface->Write("010E\r");
     std::string buf{};
     std::string ln{};
@@ -447,7 +447,7 @@ float SerialCarDevice::GetTimingAdvance() const {
     return adv;
 }
 
-int SerialCarDevice::GetIntakeAirTemperature() const {
+std::optional<int> SerialCarDevice::GetIntakeAirTemperature() const {
     serialInterface->Write("010F\r");
     std::string buf{};
     std::string ln{};
@@ -464,7 +464,7 @@ int SerialCarDevice::GetIntakeAirTemperature() const {
     return temp;
 }
 
-float SerialCarDevice::GetMassAirFlow() const {
+std::optional<float> SerialCarDevice::GetMassAirFlow() const {
     serialInterface->Write("0110\r");
     std::string buf{};
     std::string ln{};
@@ -481,7 +481,7 @@ float SerialCarDevice::GetMassAirFlow() const {
     return massflow;
 }
 
-float SerialCarDevice::GetThrottlePos() const {
+std::optional<float> SerialCarDevice::GetThrottlePos() const {
     serialInterface->Write("0111\r");
     std::string buf{};
     std::string ln{};
@@ -499,7 +499,7 @@ float SerialCarDevice::GetThrottlePos() const {
     return thr;
 }
 
-O2Sensor SerialCarDevice::GetO2Sensor(int n) const {
+std::optional<O2Sensor> SerialCarDevice::GetO2Sensor(int n) const {
     {
         std::string q;
         switch (n) {
@@ -528,7 +528,7 @@ O2Sensor SerialCarDevice::GetO2Sensor(int n) const {
                 q = "011B\r";
                 break;
             default:
-                return {.Voltage = 0.0f, .ShortTermFuelTrim = 0};
+                return {{.Voltage = 0.0f, .ShortTermFuelTrim = 0}};
         }
         serialInterface->Write(q);
     }
@@ -549,10 +549,10 @@ O2Sensor SerialCarDevice::GetO2Sensor(int n) const {
     fuelTrim /= 128;
     fuelTrim -= 100;
     WaitForPrompt(buf, 2000);
-    return {.Voltage = voltage, .ShortTermFuelTrim = fuelTrim};
+    return {{.Voltage = voltage, .ShortTermFuelTrim = fuelTrim}};
 }
 
-std::string SerialCarDevice::GetVIN() const {
+std::optional<std::string> SerialCarDevice::GetVIN() const {
     serialInterface->Write("0902\r");
     std::vector<std::string> lns{};
     {
@@ -580,13 +580,14 @@ std::string SerialCarDevice::GetVIN() const {
     return vin;
 }
 
-void SerialCarDevice::ClearDTCEtc() {
+bool SerialCarDevice::ClearDTCEtc() {
     serialInterface->Write("04\r");
     std::string buf{};
     WaitForPrompt(buf , 7000);
+    return true;
 }
 
-std::vector<std::string> SerialCarDevice::GetDTCs() const {
+std::optional<std::vector<std::string>> SerialCarDevice::GetDTCs() const {
     serialInterface->Write("03\r");
     std::vector<std::string> lns{};
     {
@@ -651,7 +652,7 @@ std::vector<std::string> SerialCarDevice::GetDTCs() const {
     return strcodes;
 }
 
-std::vector<std::string> SerialCarDevice::GetPendingDTCs() const {
+std::optional<std::vector<std::string>> SerialCarDevice::GetPendingDTCs() const {
     serialInterface->Write("07\r");
     std::vector<std::string> lns{};
     {

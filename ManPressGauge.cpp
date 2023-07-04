@@ -12,8 +12,12 @@ ManPressGauge::ManPressGauge(const std::shared_ptr<CarDatasource> &serialCarDevi
 }
 
 void ManPressGauge::Update() {
-    float kpa = (float) serialCarDevice->GetIntakeManifoldAbsPressure();
-    SetCurrentValue(kpa);
+    auto kpa = serialCarDevice->GetIntakeManifoldAbsPressure();
+    if (kpa) {
+        SetCurrentValue((float) *kpa);
+    } else {
+        SetInvalid();
+    }
 }
 
 PriorityCategory ManPressGauge::GetPriorityCategory() const {

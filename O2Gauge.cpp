@@ -42,8 +42,13 @@ void O2Gauge::DrawForeground(int x, int y, int width, int height) {
 
 void O2Gauge::Update() {
     auto o2 = carDatasource->GetO2Sensor(sensor);
-    voltageGauge.SetCurrentValue(o2.Voltage);
-    fuelTrimGauge.SetCurrentValue((float) o2.ShortTermFuelTrim);
+    if (o2) {
+        voltageGauge.SetCurrentValue(o2->Voltage);
+        fuelTrimGauge.SetCurrentValue((float) o2->ShortTermFuelTrim);
+    } else {
+        voltageGauge.SetInvalid();
+        fuelTrimGauge.SetInvalid();
+    }
 }
 
 PriorityCategory O2Gauge::GetPriorityCategory() const {

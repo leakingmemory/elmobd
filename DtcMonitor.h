@@ -7,6 +7,7 @@
 
 #include "WarningsData.h"
 #include "Meter.h"
+#include <optional>
 
 class CarDatasource;
 
@@ -22,21 +23,21 @@ public:
     void Update() override;
     PriorityCategory GetPriorityCategory() const override;
     virtual std::string GetPrefix() const = 0;
-    virtual std::vector<std::string> GetCodes() const = 0;
+    virtual std::optional<std::vector<std::string>> GetCodes() const = 0;
 };
 
 class DtcStoredMonitor : public DtcMonitor {
 public:
     DtcStoredMonitor(const std::shared_ptr<CarDatasource> &serialCarDevice, const std::shared_ptr<WarningsData> &warningsData) : DtcMonitor(serialCarDevice, warningsData) {}
     std::string GetPrefix() const override;
-    std::vector<std::string> GetCodes() const override;
+    std::optional<std::vector<std::string>> GetCodes() const override;
 };
 
 class DtcPendingMonitor : public DtcMonitor {
 public:
     DtcPendingMonitor(const std::shared_ptr<CarDatasource> &serialCarDevice, const std::shared_ptr<WarningsData> &warningsData) : DtcMonitor(serialCarDevice, warningsData) {}
     std::string GetPrefix() const override;
-    std::vector<std::string> GetCodes() const override;
+    std::optional<std::vector<std::string>> GetCodes() const override;
 };
 
 #endif //ELMOBD_DTCMONITOR_H

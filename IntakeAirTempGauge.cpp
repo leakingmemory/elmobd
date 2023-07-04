@@ -19,11 +19,16 @@ IntakeAirTempGauge::~IntakeAirTempGauge() {
 }
 
 void IntakeAirTempGauge::Update() {
-    auto temp = serialCarDevice->GetIntakeAirTemperature();
-    SetCurrentValue(temp);
+    auto optTemp = serialCarDevice->GetIntakeAirTemperature();
     std::vector<std::string> messages{};
-    if (temp > -2 && temp < 2) {
-        messages.emplace_back("ICING COND");
+    if (optTemp) {
+        auto temp = *optTemp;
+        SetCurrentValue((float) temp);
+        if (temp > -2 && temp < 2) {
+            messages.emplace_back("ICING COND");
+        }
+    } else {
+        SetInvalid();
     }
     std::lock_guard lock{warningsList->mtx};
     warningsList->messages = messages;

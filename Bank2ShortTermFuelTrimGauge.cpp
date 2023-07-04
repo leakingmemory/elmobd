@@ -11,5 +11,9 @@ Bank2ShortTermFuelTrimGauge::Bank2ShortTermFuelTrimGauge(const std::shared_ptr<C
 
 void Bank2ShortTermFuelTrimGauge::Update() {
     auto trim = serialCarDevice->GetShortTermFuelTrimBank2();
-    SetCurrentValue(trim);
+    if (trim) {
+        SetCurrentValue((float) *trim);
+    } else {
+        SetInvalid();
+    }
 }

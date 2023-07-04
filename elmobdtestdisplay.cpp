@@ -81,16 +81,16 @@ public:
     virtual bool HasO2Sensor(int n) const {
         return n == 0 || n == 1 || n == 4 || n == 5;
     }
-    virtual OBDStatus GetStatus() const {
+    virtual std::optional<OBDStatus> GetStatus() const {
         return {};
     }
-    virtual FuelSystemStatus GetFuelSystemStatus() const {
+    virtual std::optional<FuelSystemStatus> GetFuelSystemStatus() const {
         return {};
     }
-    virtual int GetCalculatedLoad() const {
-        return 0;
+    virtual std::optional<int> GetCalculatedLoad() const {
+        return {};
     }
-    virtual int GetCoolantTemperature() const {
+    virtual std::optional<int> GetCoolantTemperature() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -98,7 +98,7 @@ public:
         r -= 40;
         return (int) r;
     }
-    virtual int GetShortTermFuelTrimBank1() const {
+    virtual std::optional<int> GetShortTermFuelTrimBank1() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -106,7 +106,7 @@ public:
         r -= 100;
         return (int) r;
     }
-    virtual int GetLongTermFuelTrimBank1() const {
+    virtual std::optional<int> GetLongTermFuelTrimBank1() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -114,7 +114,7 @@ public:
         r -= 100;
         return (int) r;
     }
-    virtual int GetShortTermFuelTrimBank2() const {
+    virtual std::optional<int> GetShortTermFuelTrimBank2() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -122,7 +122,7 @@ public:
         r -= 100;
         return (int) r;
     }
-    virtual int GetLongTermFuelTrimBank2() const {
+    virtual std::optional<int> GetLongTermFuelTrimBank2() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -130,10 +130,10 @@ public:
         r -= 100;
         return (int) r;
     }
-    virtual int GetFuelGaugePressure() const {
+    virtual std::optional<int> GetFuelGaugePressure() const {
         return 0;
     }
-    virtual int GetIntakeManifoldAbsPressure() const {
+    virtual std::optional<int> GetIntakeManifoldAbsPressure() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -141,16 +141,16 @@ public:
         r += 20;
         return (int) r;
     }
-    virtual int GetRPM() const {
-        return 0;
+    virtual std::optional<int> GetRPM() const {
+        return {};
     }
-    virtual int GetSpeed() const {
-        return 0;
+    virtual std::optional<int> GetSpeed() const {
+        return {};
     }
-    virtual float GetTimingAdvance() const {
-        return 0;
+    virtual std::optional<float> GetTimingAdvance() const {
+        return {};
     }
-    virtual int GetIntakeAirTemperature() const {
+    virtual std::optional<int> GetIntakeAirTemperature() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
@@ -158,17 +158,17 @@ public:
         r -= 40;
         return (int) r;
     }
-    virtual float GetMassAirFlow() const {
+    virtual std::optional<float> GetMassAirFlow() const {
         RandomException();
         float r = (float) rand();
         r /= RAND_MAX;
         r *= 120;
         return r;
     }
-    virtual float GetThrottlePos() const {
+    virtual std::optional<float> GetThrottlePos() const {
         return 0;
     }
-    virtual O2Sensor GetO2Sensor(int n) const {
+    virtual std::optional<O2Sensor> GetO2Sensor(int n) const {
         RandomException();
         O2Sensor s{};
         {
@@ -189,17 +189,18 @@ public:
     virtual bool HasVIN() const {
         return false;
     }
-    virtual std::string GetVIN() const {
-        return "";
+    virtual std::optional<std::string> GetVIN() const {
+        return {};
     }
-    virtual void ClearDTCEtc() {
+    virtual bool ClearDTCEtc() {
         errorCodes.clear();
         pendingCodes.clear();
+        return true;
     }
-    virtual std::vector<std::string> GetDTCs() const {
+    virtual std::optional<std::vector<std::string>> GetDTCs() const {
         return errorCodes;
     }
-    virtual std::vector<std::string> GetPendingDTCs() const {
+    virtual std::optional<std::vector<std::string>> GetPendingDTCs() const {
         return pendingCodes;
     }
 };

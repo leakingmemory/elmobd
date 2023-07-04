@@ -20,17 +20,22 @@ EngCoolantTempGauge::~EngCoolantTempGauge() {
 }
 
 void EngCoolantTempGauge::Update() {
-    auto coolant = serialCarDevice->GetCoolantTemperature();
-    SetCurrentValue((float) coolant);
+    auto optCoolant = serialCarDevice->GetCoolantTemperature();
     std::vector<std::string> messages;
-    if (coolant > 99) {
-        messages.emplace_back("ENG OVERHEAT (COOL NOW)");
-    } else if (coolant > 93) {
-        messages.emplace_back("ENG OVERHEAT");
-    } else if (coolant < 5) {
-        messages.emplace_back("ENG VERY LOW TEMP");
-    } else if (coolant < 40) {
-        messages.emplace_back("ENG LOW TEMP");
+    if (optCoolant) {
+        auto coolant = *optCoolant;
+        SetCurrentValue((float) coolant);
+        if (coolant > 99) {
+            messages.emplace_back("ENG OVERHEAT (COOL NOW)");
+        } else if (coolant > 93) {
+            messages.emplace_back("ENG OVERHEAT");
+        } else if (coolant < 5) {
+            messages.emplace_back("ENG VERY LOW TEMP");
+        } else if (coolant < 40) {
+            messages.emplace_back("ENG LOW TEMP");
+        }
+    } else {
+        SetInvalid();
     }
     std::lock_guard lock{warningsList->mtx};
     warningsList->messages = messages;
