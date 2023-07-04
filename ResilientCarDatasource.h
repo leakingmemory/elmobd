@@ -9,7 +9,6 @@
 #include <memory>
 #include <mutex>
 #include <functional>
-#include <thread>
 
 class WarningsData;
 class WarningsList;
