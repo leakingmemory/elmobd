@@ -172,7 +172,7 @@ OBDStatus SerialCarDevice::GetStatus() const {
     serialInterface->Write("0101\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Status no resp");
     }
     auto msg = DecodeHex(ln);
@@ -218,7 +218,7 @@ OBDStatus SerialCarDevice::GetStatus() const {
         .MIL =                                     (statusdw & 0x80000000) != 0,
         .CompressionIgnition = compressionIgnission
     };
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return status;
 }
 
@@ -245,7 +245,7 @@ FuelSystemStatus SerialCarDevice::GetFuelSystemStatus() const {
     serialInterface->Write("0103\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Fuel system status no resp");
     }
     auto msg = DecodeHex(ln);
@@ -265,7 +265,7 @@ int SerialCarDevice::GetCalculatedLoad() const {
     serialInterface->Write("0104\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Calculated load no resp");
     }
     auto msg = DecodeHex(ln);
@@ -282,7 +282,7 @@ int SerialCarDevice::GetCoolantTemperature() const {
     serialInterface->Write("0105\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Coolant temp no resp");
     }
     auto msg = DecodeHex(ln);
@@ -298,7 +298,7 @@ int SerialCarDevice::GetShortTermFuelTrimBank1() const {
     serialInterface->Write("0106\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Short term fuel trim bank 1 no resp");
     }
     auto msg = DecodeHex(ln);
@@ -316,7 +316,7 @@ int SerialCarDevice::GetLongTermFuelTrimBank1() const {
     serialInterface->Write("0107\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Long term fuel trim bank 1 no resp");
     }
     auto msg = DecodeHex(ln);
@@ -334,7 +334,7 @@ int SerialCarDevice::GetShortTermFuelTrimBank2() const {
     serialInterface->Write("0108\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Short term fuel trim bank 2 no resp");
     }
     auto msg = DecodeHex(ln);
@@ -352,7 +352,7 @@ int SerialCarDevice::GetLongTermFuelTrimBank2() const {
     serialInterface->Write("0109\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Long term fuel trim bank 2 no resp");
     }
     auto msg = DecodeHex(ln);
@@ -370,7 +370,7 @@ int SerialCarDevice::GetFuelGaugePressure() const {
     serialInterface->Write("010A\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Fuel gauge pressure no resp");
     }
     auto msg = DecodeHex(ln);
@@ -386,7 +386,7 @@ int SerialCarDevice::GetIntakeManifoldAbsPressure() const {
     serialInterface->Write("010B\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 300)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Intake manifold abs pressure no resp");
     }
     auto msg = DecodeHex(ln);
@@ -401,7 +401,7 @@ int SerialCarDevice::GetRPM() const {
     serialInterface->Write("010C\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("RPM no resp");
     }
     auto msg = DecodeHex(ln);
@@ -409,7 +409,7 @@ int SerialCarDevice::GetRPM() const {
         throw SerialCarException("RPM wrong resp");
     }
     auto rawRpm = PayloadInt(msg);
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return (int) (rawRpm / 4);
 }
 
@@ -417,7 +417,7 @@ int SerialCarDevice::GetSpeed() const {
     serialInterface->Write("010D\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Speed no resp");
     }
     auto msg = DecodeHex(ln);
@@ -425,7 +425,7 @@ int SerialCarDevice::GetSpeed() const {
         throw SerialCarException("Speed wrong resp");
     }
     int speed = (int) PayloadInt(msg);
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return speed;
 }
 
@@ -433,7 +433,7 @@ float SerialCarDevice::GetTimingAdvance() const {
     serialInterface->Write("010E\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Timing advance no resp");
     }
     auto msg = DecodeHex(ln);
@@ -443,7 +443,7 @@ float SerialCarDevice::GetTimingAdvance() const {
     float adv = (float) PayloadInt(msg);
     adv /= 2;
     adv -= 64.0f;
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return adv;
 }
 
@@ -451,7 +451,7 @@ int SerialCarDevice::GetIntakeAirTemperature() const {
     serialInterface->Write("010F\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Intake air temp no resp");
     }
     auto msg = DecodeHex(ln);
@@ -460,7 +460,7 @@ int SerialCarDevice::GetIntakeAirTemperature() const {
     }
     int temp = (int) PayloadInt(msg);
     temp -= 40;
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return temp;
 }
 
@@ -468,7 +468,7 @@ float SerialCarDevice::GetMassAirFlow() const {
     serialInterface->Write("0110\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Mass air flow no resp");
     }
     auto msg = DecodeHex(ln);
@@ -477,7 +477,7 @@ float SerialCarDevice::GetMassAirFlow() const {
     }
     float massflow = (float) PayloadInt(msg);
     massflow /= 100.0f;
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return massflow;
 }
 
@@ -485,7 +485,7 @@ float SerialCarDevice::GetThrottlePos() const {
     serialInterface->Write("0111\r");
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("Throttle pos no resp");
     }
     auto msg = DecodeHex(ln);
@@ -495,7 +495,7 @@ float SerialCarDevice::GetThrottlePos() const {
     float thr = (float) PayloadInt(msg);
     thr *= 100.0f;
     thr /= 255.0f;
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return thr;
 }
 
@@ -534,7 +534,7 @@ O2Sensor SerialCarDevice::GetO2Sensor(int n) const {
     }
     std::string buf{};
     std::string ln{};
-    if (!WaitForLine(buf, ln, 200)) {
+    if (!WaitForLine(buf, ln, 2000)) {
         throw SerialCarException("O2 no resp");
     }
     auto msg = DecodeHex(ln);
@@ -548,7 +548,7 @@ O2Sensor SerialCarDevice::GetO2Sensor(int n) const {
     fuelTrim *= 100;
     fuelTrim /= 128;
     fuelTrim -= 100;
-    WaitForPrompt(buf, 1000);
+    WaitForPrompt(buf, 2000);
     return {.Voltage = voltage, .ShortTermFuelTrim = fuelTrim};
 }
 
@@ -583,7 +583,7 @@ std::string SerialCarDevice::GetVIN() const {
 void SerialCarDevice::ClearDTCEtc() {
     serialInterface->Write("04\r");
     std::string buf{};
-    WaitForPrompt(buf , 5000);
+    WaitForPrompt(buf , 7000);
 }
 
 std::vector<std::string> SerialCarDevice::GetDTCs() const {
@@ -591,7 +591,7 @@ std::vector<std::string> SerialCarDevice::GetDTCs() const {
     std::vector<std::string> lns{};
     {
         std::string buf{};
-        auto data = WaitForPrompt(buf, 7000);
+        auto data = WaitForPrompt(buf, 9000);
         {
             auto iterator = data.begin();
             while (iterator != data.end()) {
@@ -656,7 +656,7 @@ std::vector<std::string> SerialCarDevice::GetPendingDTCs() const {
     std::vector<std::string> lns{};
     {
         std::string buf{};
-        auto data = WaitForPrompt(buf, 7000);
+        auto data = WaitForPrompt(buf, 9000);
         {
             auto iterator = data.begin();
             while (iterator != data.end()) {
