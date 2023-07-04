@@ -153,281 +153,42 @@ bool ResilientCarDatasource::HasO2Sensor(int n) const {
     std::lock_guard lock{*mtx};
     return c->capsCarDatasource->HasO2Sensor(n);
 }
+
 OBDStatus ResilientCarDatasource::GetStatus() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetStatus();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return {};
+    return Resilient<OBDStatus>([] (CarDatasource &conn) {return conn.GetStatus(); }, {});
 }
 FuelSystemStatus ResilientCarDatasource::GetFuelSystemStatus() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetFuelSystemStatus();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return {};
+    return Resilient<FuelSystemStatus>([] (CarDatasource &conn) {return conn.GetFuelSystemStatus();}, {});
 }
 int ResilientCarDatasource::GetCalculatedLoad() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetCalculatedLoad();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetCalculatedLoad();}, -1);
 }
 int ResilientCarDatasource::GetCoolantTemperature() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetCoolantTemperature();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetCoolantTemperature();}, -1);
 }
 int ResilientCarDatasource::GetShortTermFuelTrimBank1() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetShortTermFuelTrimBank1();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return 155;
+    return Resilient<int>([] (auto &conn) {return conn.GetShortTermFuelTrimBank1();}, 155);
 }
 int ResilientCarDatasource::GetLongTermFuelTrimBank1() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetLongTermFuelTrimBank1();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return 155;
+    return Resilient<int>([] (auto &conn) {return conn.GetLongTermFuelTrimBank1();}, 155);
 }
 int ResilientCarDatasource::GetShortTermFuelTrimBank2() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetShortTermFuelTrimBank2();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return 155;
+    return Resilient<int>([] (auto &conn) {return conn.GetShortTermFuelTrimBank2();}, 155);
 }
 int ResilientCarDatasource::GetLongTermFuelTrimBank2() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetLongTermFuelTrimBank2();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return 155;
+    return Resilient<int>([] (auto &conn) {return conn.GetLongTermFuelTrimBank2();}, 155);
 }
 int ResilientCarDatasource::GetFuelGaugePressure() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetFuelGaugePressure();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetFuelGaugePressure();}, -1);
 }
 int ResilientCarDatasource::GetIntakeManifoldAbsPressure() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetIntakeManifoldAbsPressure();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetIntakeManifoldAbsPressure(); }, -1);
 }
 int ResilientCarDatasource::GetRPM() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetRPM();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetRPM();}, -1);
 }
 int ResilientCarDatasource::GetSpeed() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetSpeed();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetSpeed();}, -1);
 }
 float ResilientCarDatasource::GetTimingAdvance() const {
     std::shared_ptr<CarDatasource> conn;

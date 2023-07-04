@@ -8,6 +8,8 @@
 #include "CarDatasource.h"
 #include <memory>
 #include <mutex>
+#include <functional>
+#include <thread>
 
 class WarningsData;
 class WarningsList;
@@ -53,6 +55,29 @@ public:
     bool HasMassAirFlow() const override;
     bool HasThrottlePos() const override;
     bool HasO2Sensor(int n) const override;
+    template <class T> T Resilient(const std::function<T (CarDatasource &conn)> &func, T invalidValue) const {
+        std::shared_ptr<CarDatasource> conn;
+        bool connecting;
+        {
+            std::lock_guard lock{*mtx};
+            conn = c->carDatasource;
+            connecting = c->connecting;
+        }
+        if (conn) {
+            try {
+                return func(*conn);
+            } catch (...) {
+                Connect();
+            }
+        } else if (!connecting) {
+            Connect();
+        }
+        {
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(1s);
+        }
+        return invalidValue;
+    }
     OBDStatus GetStatus() const override;
     FuelSystemStatus GetFuelSystemStatus() const override;
     int GetCalculatedLoad() const override;
