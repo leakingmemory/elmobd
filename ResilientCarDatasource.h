@@ -56,28 +56,13 @@ public:
     bool HasThrottlePos() const override;
     bool HasO2Sensor(int n) const override;
     template <class T> T Resilient(const std::function<T (CarDatasource &conn)> &func, T invalidValue) const {
-        std::shared_ptr<CarDatasource> conn;
-        bool connecting;
-        {
-            std::lock_guard lock{*mtx};
-            conn = c->carDatasource;
-            connecting = c->connecting;
-        }
-        if (conn) {
-            try {
-                return func(*conn);
-            } catch (...) {
-                Connect();
-            }
-        } else if (!connecting) {
-            Connect();
-        }
-        {
-            using namespace std::chrono_literals;
-            std::this_thread::sleep_for(1s);
-        }
-        return invalidValue;
+        T value = invalidValue;
+        Resilient([&value, &func] (auto &conn) {
+            value = func(conn);
+        });
+        return value;
     }
+    void Resilient(const std::function<void (CarDatasource &conn)> &func) const;
     OBDStatus GetStatus() const override;
     FuelSystemStatus GetFuelSystemStatus() const override;
     int GetCalculatedLoad() const override;

@@ -154,6 +154,30 @@ bool ResilientCarDatasource::HasO2Sensor(int n) const {
     return c->capsCarDatasource->HasO2Sensor(n);
 }
 
+void ResilientCarDatasource::Resilient(const std::function<void(CarDatasource &)> &func) const {
+    std::shared_ptr<CarDatasource> conn;
+    bool connecting;
+    {
+        std::lock_guard lock{*mtx};
+        conn = c->carDatasource;
+        connecting = c->connecting;
+    }
+    if (conn) {
+        try {
+            func(*conn);
+            return;
+        } catch (...) {
+            Connect();
+        }
+    } else if (!connecting) {
+        Connect();
+    }
+    {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
+    }
+}
+
 OBDStatus ResilientCarDatasource::GetStatus() const {
     return Resilient<OBDStatus>([] (CarDatasource &conn) {return conn.GetStatus(); }, {});
 }
@@ -191,217 +215,38 @@ int ResilientCarDatasource::GetSpeed() const {
     return Resilient<int>([] (auto &conn) {return conn.GetSpeed();}, -1);
 }
 float ResilientCarDatasource::GetTimingAdvance() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetTimingAdvance();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<float>([] (auto &conn) {return conn.GetTimingAdvance();}, -1);
 }
 int ResilientCarDatasource::GetIntakeAirTemperature() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetIntakeAirTemperature();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<int>([] (auto &conn) {return conn.GetIntakeAirTemperature();}, -1);
 }
 float ResilientCarDatasource::GetMassAirFlow() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetMassAirFlow();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<float>([] (auto &conn) {return conn.GetMassAirFlow();}, -1);
 }
 float ResilientCarDatasource::GetThrottlePos() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetThrottlePos();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return -1;
+    return Resilient<float>([] (auto &conn) {return conn.GetThrottlePos();}, -1);
 }
 O2Sensor ResilientCarDatasource::GetO2Sensor(int n) const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetO2Sensor(n);
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return {};
+    return Resilient<O2Sensor>([n] (auto &conn) {return conn.GetO2Sensor(n);}, {});
 }
 bool ResilientCarDatasource::HasVIN() const {
     std::lock_guard lock{*mtx};
     return c->capsCarDatasource->HasVIN();
 }
 std::string ResilientCarDatasource::GetVIN() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetVIN();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return "";
+    return Resilient<std::string>([] (auto &conn) {return conn.GetVIN();}, "");
 }
 
 std::vector<std::string> ResilientCarDatasource::GetDTCs() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetDTCs();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return {};
+    return Resilient<std::vector<std::string>>([] (auto &conn) {return conn.GetDTCs();}, {});
 }
 
 std::vector<std::string> ResilientCarDatasource::GetPendingDTCs() const {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            return conn->GetPendingDTCs();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
-    return {};
+    return Resilient<std::vector<std::string>>([] (auto &conn) {return conn.GetPendingDTCs();}, {});
 }
 
 void ResilientCarDatasource::ClearDTCEtc() {
-    std::shared_ptr<CarDatasource> conn;
-    bool connecting;
-    {
-        std::lock_guard lock{*mtx};
-        conn = c->carDatasource;
-        connecting = c->connecting;
-    }
-    if (conn) {
-        try {
-            conn->ClearDTCEtc();
-        } catch (...) {
-            Connect();
-        }
-    } else if (!connecting) {
-        Connect();
-    }
-    {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
-    }
+    Resilient([] (auto &conn) {conn.ClearDTCEtc();});
 }
 
 ResilientOBDCarDatasource::ResilientOBDCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : ResilientCarDatasource(warningsData) {
