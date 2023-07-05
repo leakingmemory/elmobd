@@ -17,7 +17,7 @@ ResilientConnectionData::~ResilientConnectionData() {
     warningsData->Remove(warningsList);
 }
 
-ResilientCarDatasource::ResilientCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : mtx(std::make_unique<std::mutex>()), c(std::make_unique<ResilientConnectionData>(warningsData)) {
+ResilientCarDatasource::ResilientCarDatasource(const std::shared_ptr<WarningsData> &warningsData) : mtx(std::make_unique<std::mutex>()), c(std::make_unique<ResilientConnectionData>(warningsData)), error(std::make_unique<std::string>()) {
 }
 
 void ResilientCarDatasource::Connect() const {
@@ -79,6 +79,12 @@ void ResilientCarDatasource::Init() {
         }
     }
     c->capsCarDatasource = c->carDatasource;
+}
+
+std::string ResilientCarDatasource::GetLastError() {
+    std::string error = *(this->error);
+    *(this->error) = "";
+    return error;
 }
 
 void ResilientCarDatasource::Disconnect() {
@@ -166,7 +172,16 @@ bool ResilientCarDatasource::Resilient(const std::function<void(CarDatasource &)
         try {
             func(*conn);
             return true;
+        } catch (std::exception &e) {
+            auto *error = e.what();
+            if (error != nullptr) {
+                *(this->error) = error;
+            } else {
+                *(this->error) = "std::exception";
+            }
+            Connect();
         } catch (...) {
+            *(this->error) = "unknown error";
             Connect();
         }
     } else if (!connecting) {

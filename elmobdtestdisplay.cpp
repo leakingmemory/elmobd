@@ -9,11 +9,27 @@
 #include <cstdlib>
 #include <memory>
 
+class TestException : public std::exception {
+private:
+    std::string error;
+public:
+    TestException(const std::string &error) : error(error) {}
+    const char * what() const noexcept override {
+        return error.c_str();
+    }
+};
+
 static void RandomException() {
     float r = (float) rand();
     r /= RAND_MAX;
     if (r < 0.05) {
-        throw std::exception();
+        if (r > 0.02) {
+            throw TestException("Random error");
+        } else if (r > 0.01) {
+            throw TestException("Rare error");
+        } else {
+            throw std::exception();
+        }
     }
 }
 
@@ -28,6 +44,9 @@ public:
         errorCodes.emplace_back("P332");
         pendingCodes.emplace_back("P101");
         pendingCodes.emplace_back("P374");
+    }
+    std::string GetLastError() override {
+        return "";
     }
     void Disconnect() override {
     }

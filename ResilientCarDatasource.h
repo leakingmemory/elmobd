@@ -28,6 +28,7 @@ class ResilientCarDatasource : public CarDatasource, public std::enable_shared_f
 private:
     std::unique_ptr<std::mutex> mtx;
     std::unique_ptr<ResilientConnectionData> c;
+    std::unique_ptr<std::string> error;
 public:
     ResilientCarDatasource(const std::shared_ptr<WarningsData> &warningsData);
 private:
@@ -36,6 +37,7 @@ private:
 protected:
     void Init();
 public:
+    std::string GetLastError() override;
     void Disconnect();
     bool HasStatus() const override;
     bool HasFuelSystemStatus() const override;

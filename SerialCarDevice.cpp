@@ -20,6 +20,10 @@ public:
 SerialCarDevice::SerialCarDevice(SerialInterface &&mv, const std::string &protocol) : SerialCanDevice(std::move(mv), protocol) {
 }
 
+std::string SerialCarDevice::GetLastError() {
+    return "";
+}
+
 void SerialCarDevice::Disconnect() {
     SerialCanDevice::Disconnect();
 }

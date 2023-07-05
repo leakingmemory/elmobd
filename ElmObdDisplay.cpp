@@ -159,15 +159,29 @@ void ElmObdDisplay::Run() const {
         int counter = 0;
         while (true) {
             for (auto &meter : highpri) {
-                std::lock_guard lock{mtx};
-                meter->Update();
+                std::string error{};
+                {
+                    std::lock_guard lock{mtx};
+                    meter->Update();
+                    error = carDatasource->GetLastError();
+                }
+                if (!error.empty()) {
+                    std::cerr << "Error: " << error << "\n";
+                }
             }
             if (lowiter == lowpri.end()) {
                 lowiter = lowpri.begin();
             }
             if (lowiter != lowpri.end()) {
-                std::lock_guard lock{mtx};
-                (*lowiter)->Update();
+                std::string error{};
+                {
+                    std::lock_guard lock{mtx};
+                    (*lowiter)->Update();
+                    error = carDatasource->GetLastError();
+                }
+                if (!error.empty()) {
+                    std::cerr << "Error: " << error << "\n";
+                }
                 ++lowiter;
             }
             if ((++counter % 10) == 0) {
@@ -178,8 +192,15 @@ void ElmObdDisplay::Run() const {
                     vlowiter = vlowpri.begin();
                 }
                 if (vlowiter != vlowpri.end()) {
-                    std::lock_guard lock{mtx};
-                    (*vlowiter)->Update();
+                    std::string error{};
+                    {
+                        std::lock_guard lock{mtx};
+                        (*vlowiter)->Update();
+                        error = carDatasource->GetLastError();
+                    }
+                    if (!error.empty()) {
+                        std::cerr << "Error: " << error << "\n";
+                    }
                     ++vlowiter;
                 }
             }

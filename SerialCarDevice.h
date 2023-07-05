@@ -13,6 +13,7 @@ public:
     SerialCarDevice(SerialInterface &&mv, const std::string &protocol = "");
 private:
 public:
+    std::string GetLastError() override;
     void Disconnect() override;
     bool HasStatus() const override;
     bool HasFuelSystemStatus() const override;

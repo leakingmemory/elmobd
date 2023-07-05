@@ -59,6 +59,13 @@ void ClearDtcButton::DrawForeground(int x, int y, int width, int height) {
 
 void ClearDtcButton::Clicked() {
     std::cout << "Clearing DTCs\n";
-    std::lock_guard lock{*mtx};
-    serialCarDevice->ClearDTCEtc();
+    std::string error{};
+    {
+        std::lock_guard lock{*mtx};
+        serialCarDevice->ClearDTCEtc();
+        error = serialCarDevice->GetLastError();
+    }
+    if (!error.empty()) {
+        std::cerr << "clear dtc error: " << error << "\n";
+    }
 }
