@@ -26,6 +26,7 @@ public:
         errorCodes.emplace_back("P171");
         errorCodes.emplace_back("P174");
         errorCodes.emplace_back("P332");
+        pendingCodes.emplace_back("P101");
         pendingCodes.emplace_back("P374");
     }
     void Disconnect() override {

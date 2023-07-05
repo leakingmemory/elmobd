@@ -5,6 +5,9 @@
 #include "DtcCodeMap.h"
 
 std::string DtcCodeMap::GetMsg(const std::string &code) {
+    if (code == "P101") {
+        return "MAF OUT OF RANGE";
+    }
     if (code == "P171") {
         return "FUEL LEAN (B1)";
     }
