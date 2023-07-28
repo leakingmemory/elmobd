@@ -5,6 +5,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <algorithm>
 #include "SerialCanDevice.h"
 #include "SerialInterface.h"
 
@@ -201,6 +202,13 @@ std::string SerialCanDevice::DecodeHex(const std::string &ihex) {
                 continue;
             }
             ++iterator;
+        }
+    }
+    {
+        std::string hhex{hex};
+        std::transform(hhex.begin(), hhex.end(), hhex.begin(), [] (auto ch) { return std::tolower(ch); });
+        if (hhex == "nodata") {
+            return "";
         }
     }
     std::string bytes{};

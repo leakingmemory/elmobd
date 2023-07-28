@@ -612,6 +612,9 @@ std::optional<std::vector<std::string>> SerialCarDevice::GetDTCs() const {
     std::vector<unsigned int> codes{};
     for (const auto ln : lns) {
         auto msg = DecodeHex(ln);
+        if (msg.empty()) {
+            continue;
+        }
         if (ReplyMode(msg) == 3) {
             auto rawcodes = PayloadMode(msg);
             auto iterator = rawcodes.begin();
@@ -677,6 +680,9 @@ std::optional<std::vector<std::string>> SerialCarDevice::GetPendingDTCs() const 
     std::vector<unsigned int> codes{};
     for (const auto ln : lns) {
         auto msg = DecodeHex(ln);
+        if (msg.empty()) {
+            continue;
+        }
         if (ReplyMode(msg) == 7) {
             auto rawcodes = PayloadMode(msg);
             auto iterator = rawcodes.begin();
